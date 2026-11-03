@@ -1,406 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#11111b">
+  <title>NEXORA — Beyond Ordinary</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="violet">
 
-<div class="app-shell">
-  <aside class="sidebar" id="sidebar">
-    <div class="brand">
-      <div class="brand-icon">N</div>
-      <div>
-        <h2>NEXORA</h2>
-        <small>Beyond Ordinary</small>
+  <div class="app">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-logo">N</div>
+        <div>
+          <h2>NEXORA</h2>
+          <small>BEYOND ORDINARY</small>
+        </div>
+        <button class="icon-btn close-sidebar" id="closeSidebar">✕</button>
       </div>
-      <button class="icon-btn close-sidebar" id="closeSidebar">×</button>
-    </div>
 
-    <div class="user-mini">
-      <div class="avatar" id="miniAvatar">G</div>
-      <div class="user-mini-info">
-        <strong id="miniName">Guest User</strong>
-        <small id="miniPlan">Free Account</small>
+      <div class="user-mini">
+        <div class="avatar" id="miniAvatar">N</div>
+        <div class="user-mini-info">
+          <strong id="miniName">Guest User</strong>
+          <small id="miniPlan">Free Member</small>
+        </div>
+        <button class="icon-btn" id="accountBtn" title="Account">⌄</button>
       </div>
-      <span class="online-dot"></span>
-    </div>
 
-    <div class="nav-label">WORKSPACE</div>
-    <nav class="nav-menu">
-      <button class="nav-item active" data-page="dashboard"><span>⌂</span> Dashboard</button>
-      <button class="nav-item" data-page="explore"><span>◈</span> Explore</button>
-      <button class="nav-item" data-page="features"><span>✦</span> Features</button>
-      <button class="nav-item" data-page="gallery"><span>▧</span> Gallery</button>
-      <button class="nav-item" data-page="activity"><span>◷</span> Activity</button>
-    </nav>
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="navigation">
+        <button class="nav-item active" data-page="dashboard"><span>◈</span> Dashboard</button>
+        <button class="nav-item" data-page="explore"><span>⌕</span> Explore</button>
+        <button class="nav-item" data-page="gallery"><span>▦</span> Gallery</button>
+        <button class="nav-item" data-page="tools"><span>⚙</span> Tools</button>
+        <button class="nav-item" data-page="favorites"><span>♡</span> Favorites</button>
+      </nav>
 
-    <div class="nav-label">PERSONAL</div>
-    <nav class="nav-menu">
-      <button class="nav-item" data-page="profile"><span>♙</span> My Profile</button>
-      <button class="nav-item" data-page="favorites"><span>♡</span> Favorites</button>
-      <button class="nav-item" data-page="notifications"><span>♧</span> Notifications <i id="navNotificationCount">2</i></button>
-    </nav>
-
-    <div class="nav-label">PREMIUM</div>
-    <nav class="nav-menu">
-      <button class="nav-item" data-page="subscription"><span>♛</span> Subscription</button>
-      <button class="nav-item" data-page="tools"><span>✧</span> Premium Tools <span class="pro-tag">PRO</span></button>
-    </nav>
-
-    <div class="sidebar-bottom">
-      <button class="nav-item" data-page="customize"><span>⚙</span> Customize</button>
-      <button class="nav-item" data-page="settings"><span>☷</span> Settings</button>
-      <div class="sidebar-promo">
-        <div class="promo-star">✦</div>
-        <strong>Unlock your potential</strong>
-        <p>Explore the premium experience.</p>
-        <button data-page="subscription" class="promo-btn">Explore Plans ↗</button>
-      </div>
-      <small class="copyright">NEXORA © 2026</small>
-    </div>
-  </aside>
-
-  <main class="main-area">
-    <header class="topbar">
-      <div class="top-left">
-        <button class="icon-btn menu-toggle" id="menuToggle">☰</button>
-        <div class="breadcrumb">Workspace <span>/</span> <b id="pageName">Dashboard</b></div>
-      </div>
-      <div class="top-actions">
-        <button class="icon-btn" id="quickTheme" title="Toggle theme">☼</button>
-        <button class="icon-btn notification-trigger" id="notificationBtn" title="Notifications">
-          ♧<i class="notification-dot"></i>
+      <div class="nav-label">PERSONAL</div>
+      <nav class="navigation">
+        <button class="nav-item" data-page="profile"><span>♙</span> My Profile</button>
+        <button class="nav-item" data-page="subscription"><span>✧</span> Membership</button>
+        <button class="nav-item" data-page="customize"><span>◐</span> Theme Studio</button>
+        <button class="nav-item" data-page="notifications">
+          <span>♧</span> Notifications
+          <span class="nav-count" id="navNotificationCount">2</span>
         </button>
-        <button class="top-login" id="accountBtn">Login / Sign up</button>
-        <div class="avatar top-avatar" id="topAvatar">G</div>
+        <button class="nav-item" data-page="settings"><span>☷</span> Settings</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="upgrade-card">
+          <div class="upgrade-icon">✦</div>
+          <strong>Unlock more possibilities</strong>
+          <p>Explore the premium demo experience.</p>
+          <button class="small-primary" data-page="subscription">Explore Plans →</button>
+        </div>
+        <small class="sidebar-version">NEXORA v1.0 · Personal Edition</small>
       </div>
-    </header>
+    </aside>
 
-    <div class="page-container">
-
-      <!-- DASHBOARD -->
-      <section class="page active" id="dashboard">
-        <div class="welcome-row">
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn menu-toggle" id="menuToggle">☰</button>
           <div>
-            <div class="eyebrow"><span class="live-dot"></span> YOUR DIGITAL SPACE</div>
-            <h1>Welcome back, <span id="welcomeName">Explorer</span> <span class="wave">✦</span></h1>
-            <p>Your space. Your style. Your possibilities.</p>
-          </div>
-          <div class="date-chip" id="todayDate">Today</div>
-        </div>
-
-        <div class="hero-banner">
-          <div class="hero-content">
-            <span class="hero-label">✦ DISCOVER SOMETHING NEW</span>
-            <h2>Make every<br>moment <em>count.</em></h2>
-            <p>A smarter space to explore, organize and create your own experience.</p>
-            <button class="hero-btn" data-page="explore">Explore Platform ↗</button>
-          </div>
-          <div class="hero-decoration">N</div>
-          <div class="hero-bottom">NEXORA EXPERIENCE · 2026</div>
-        </div>
-
-        <div class="section-heading">
-          <div><h2>Your Overview</h2><p>A quick look at your workspace.</p></div>
-          <span class="live-status">● All systems ready</span>
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon purple">◈</div>
-            <span>Account Type</span>
-            <h3 id="statPlan">Guest</h3>
-            <small>Current access</small>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon blue">✦</div>
-            <span>Available Features</span>
-            <h3 id="statFeatures">8</h3>
-            <small>Explore your tools</small>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon green">✓</div>
-            <span>Saved Items</span>
-            <h3 id="statSaved">0</h3>
-            <small>Your favorites</small>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon orange">◷</div>
-            <span>Activities</span>
-            <h3 id="statActivity">0</h3>
-            <small>Actions this session</small>
+            <div class="breadcrumb">Workspace / <span id="pageName">Dashboard</span></div>
+            <h1 id="topTitle">Dashboard</h1>
           </div>
         </div>
-
-        <div class="section-heading">
-          <div><h2>Quick Access</h2><p>Your favorite destinations.</p></div>
-          <button class="text-link" data-page="features">View all →</button>
+        <div class="topbar-actions">
+          <button class="icon-btn" id="notificationBtn" title="Notifications">♧</button>
+          <button class="avatar top-avatar" id="topAvatar">N</button>
         </div>
+      </header>
 
-        <div class="quick-grid">
-          <button class="quick-card" data-page="profile"><span class="quick-icon qi-purple">♙</span><b>Profile</b><small>Personal space</small></button>
-          <button class="quick-card" data-page="gallery"><span class="quick-icon qi-blue">▧</span><b>Gallery</b><small>Visual collection</small></button>
-          <button class="quick-card" data-page="customize"><span class="quick-icon qi-green">✧</span><b>Customize</b><small>Make it yours</small></button>
-          <button class="quick-card" data-page="subscription"><span class="quick-icon qi-gold">♛</span><b>Premium</b><small>Explore plans</small></button>
-          <button class="quick-card" data-page="activity"><span class="quick-icon qi-pink">◷</span><b>Activity</b><small>Your history</small></button>
-          <button class="quick-card" data-page="settings"><span class="quick-icon qi-orange">⚙</span><b>Settings</b><small>Manage workspace</small></button>
-        </div>
+      <div class="content">
 
-        <div class="section-heading">
-          <div><h2>Featured Collection</h2><p>Explore beautiful visual experiences.</p></div>
-          <button class="text-link" data-page="gallery">Open gallery →</button>
-        </div>
-        <div class="featured-grid">
-          <div class="featured-card featured-one">
-            <div><span>01 / NATURE</span><h3>Find your<br>calm.</h3></div>
-            <button data-page="gallery">Discover ↗</button>
+        <!-- DASHBOARD -->
+        <section class="page active" id="dashboard">
+          <div class="welcome-banner">
+            <div class="welcome-content">
+              <span class="eyebrow">YOUR PERSONAL WORKSPACE</span>
+              <h2>Welcome back, <span id="welcomeName">Explorer</span> ✨</h2>
+              <p>Your ideas deserve a space beyond ordinary.</p>
+              <button class="primary-btn" data-page="explore">Explore Workspace <span>→</span></button>
+            </div>
+            <div class="banner-art">
+              <div class="orbit orbit-one"></div>
+              <div class="orbit orbit-two"></div>
+              <div class="planet">N</div>
+              <div class="spark spark-one">✦</div>
+              <div class="spark spark-two">✧</div>
+            </div>
           </div>
-          <div class="featured-card featured-two">
-            <div><span>02 / FUTURE</span><h3>Think<br>beyond.</h3></div>
-            <button data-page="gallery">Discover ↗</button>
+
+          <div class="section-heading">
+            <div><span class="eyebrow">OVERVIEW</span><h2>Your workspace</h2></div>
+            <span class="date-text" id="todayDate"></span>
           </div>
-          <div class="featured-card featured-three">
-            <div><span>03 / SPACE</span><h3>Explore<br>infinity.</h3></div>
-            <button data-page="gallery">Discover ↗</button>
+
+          <div class="stats-grid">
+            <article class="stat-card">
+              <div class="stat-icon purple">◈</div>
+              <span>Membership</span>
+              <strong id="statPlan">Free</strong>
+              <small>Your current plan</small>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon cyan">▦</div>
+              <span>Available sections</span>
+              <strong id="statFeatures">10</strong>
+              <small>Explore your workspace</small>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon pink">♡</div>
+              <span>Saved favorites</span>
+              <strong id="statSaved">0</strong>
+              <small>Your saved items</small>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon orange">↗</div>
+              <span>Recent activity</span>
+              <strong id="statActivity">0</strong>
+              <small>Actions on this device</small>
+            </article>
           </div>
-        </div>
-      </section>
 
-      <!-- EXPLORE -->
-      <section class="page" id="explore">
-        <div class="page-intro">
-          <span class="eyebrow">DISCOVER NEXORA</span>
-          <h1>Explore <em>possibilities.</em></h1>
-          <p>Find your next favorite destination.</p>
-        </div>
-        <div class="search-box"><span>⌕</span><input id="exploreSearch" placeholder="Search sections and features..."></div>
-        <div class="explore-grid" id="exploreGrid">
-          <button class="explore-card" data-page="features"><span>✦</span><h3>Features</h3><p>Discover platform features.</p></button>
-          <button class="explore-card" data-page="gallery"><span>▧</span><h3>Gallery</h3><p>Explore visual collections.</p></button>
-          <button class="explore-card" data-page="customize"><span>🎨</span><h3>Customization</h3><p>Create your own style.</p></button>
-          <button class="explore-card" data-page="subscription"><span>♛</span><h3>Premium</h3><p>See available plans.</p></button>
-          <button class="explore-card" data-page="profile"><span>♙</span><h3>Profile</h3><p>Manage your identity.</p></button>
-          <button class="explore-card" data-page="settings"><span>⚙</span><h3>Settings</h3><p>Configure your workspace.</p></button>
-        </div>
-      </section>
-
-      <!-- FEATURES -->
-      <section class="page" id="features">
-        <div class="page-intro"><span class="eyebrow">THE NEXORA TOOLBOX</span><h1>Everything in <em>one place.</em></h1><p>Explore the features available in your workspace.</p></div>
-        <div class="feature-grid" id="featureGrid">
-          <div class="feature-card"><span>◈</span><h3>Personal Dashboard</h3><p>Your central workspace.</p><small>FREE</small></div>
-          <div class="feature-card"><span>♙</span><h3>Profile Manager</h3><p>Manage your profile.</p><small>FREE</small></div>
-          <div class="feature-card"><span>🎨</span><h3>Theme Studio</h3><p>Customize your appearance.</p><small>FREE</small></div>
-          <div class="feature-card"><span>▧</span><h3>Visual Gallery</h3><p>Beautiful image collections.</p><small>FREE</small></div>
-          <div class="feature-card locked" data-premium><span>✧</span><h3>Advanced Studio</h3><p>Premium workspace tools.</p><small>PRO 🔒</small></div>
-          <div class="feature-card locked" data-premium><span>◉</span><h3>Advanced Analytics</h3><p>Detailed demo analytics.</p><small>PRO 🔒</small></div>
-          <div class="feature-card locked" data-premium><span>♛</span><h3>Exclusive Themes</h3><p>Special theme collection.</p><small>PRO 🔒</small></div>
-          <div class="feature-card locked" data-premium><span>⚡</span><h3>Power Tools</h3><p>Extra workspace tools.</p><small>PRO 🔒</small></div>
-        </div>
-      </section>
-
-      <!-- GALLERY -->
-      <section class="page" id="gallery">
-        <div class="page-intro"><span class="eyebrow">VISUAL EXPERIENCES</span><h1>Beautiful <em>worlds.</em></h1><p>A collection of handpicked visual inspirations.</p></div>
-        <div class="gallery-grid">
-          <div class="gallery-item gallery-a"><span>01 · COSMOS</span><h3>Beyond the stars</h3><button class="favorite-btn" data-fav="Cosmos">♡</button></div>
-          <div class="gallery-item gallery-b"><span>02 · NATURE</span><h3>Into the wild</h3><button class="favorite-btn" data-fav="Nature">♡</button></div>
-          <div class="gallery-item gallery-c"><span>03 · ARCHITECTURE</span><h3>Modern visions</h3><button class="favorite-btn" data-fav="Architecture">♡</button></div>
-          <div class="gallery-item gallery-d"><span>04 · MOUNTAINS</span><h3>Above the clouds</h3><button class="favorite-btn" data-fav="Mountains">♡</button></div>
-          <div class="gallery-item gallery-e"><span>05 · OCEAN</span><h3>Deep blue</h3><button class="favorite-btn" data-fav="Ocean">♡</button></div>
-          <div class="gallery-item gallery-f"><span>06 · FUTURE</span><h3>Neon dreams</h3><button class="favorite-btn" data-fav="Future">♡</button></div>
-        </div>
-      </section>
-
-      <!-- ACTIVITY -->
-      <section class="page" id="activity">
-        <div class="page-intro"><span class="eyebrow">YOUR JOURNEY</span><h1>Recent <em>activity.</em></h1><p>Actions performed in this browser.</p></div>
-        <div class="panel"><h2>Activity History</h2><div id="activityList" class="activity-list"><p class="empty-state">No activity yet. Start exploring!</p></div><button class="secondary-btn" id="clearActivity">Clear History</button></div>
-      </section>
-
-      <!-- PROFILE -->
-      <section class="page" id="profile">
-        <div class="page-intro"><span class="eyebrow">PERSONAL SPACE</span><h1>Your <em>profile.</em></h1><p>Manage your local demo account information.</p></div>
-        <div class="profile-layout">
-          <div class="panel profile-card">
-            <div class="profile-avatar" id="profileAvatar">G</div>
-            <h2 id="profileDisplayName">Guest User</h2>
-            <p id="profileEmail">Guest Mode</p>
-            <span class="plan-pill" id="profilePlan">GUEST</span>
-            <div class="profile-divider"></div>
-            <p>Account status: <b id="profileStatus">Browsing as Guest</b></p>
-            <button class="primary-btn" id="profileLogin">Login / Register</button>
+          <div class="dashboard-grid">
+            <div class="panel">
+              <div class="panel-heading"><div><span class="eyebrow">QUICK ACCESS</span><h3>Explore sections</h3></div></div>
+              <div class="quick-grid">
+                <button class="quick-card" data-page="explore"><span>⌕</span><strong>Explore</strong><small>Discover content</small></button>
+                <button class="quick-card" data-page="gallery"><span>▦</span><strong>Gallery</strong><small>Visual collection</small></button>
+                <button class="quick-card" data-page="tools"><span>⚙</span><strong>Tools</strong><small>Useful utilities</small></button>
+                <button class="quick-card" data-page="customize"><span>◐</span><strong>Customize</strong><small>Make it yours</small></button>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-heading"><div><span class="eyebrow">YOUR JOURNEY</span><h3>Recent activity</h3></div></div>
+              <div id="activityList" class="activity-list"><p class="empty-state">Your activity will appear here.</p></div>
+            </div>
           </div>
-          <div class="panel">
-            <h2>Profile Information</h2>
-            <form id="profileForm">
-              <label>Display Name</label><input id="editName" placeholder="Your name">
-              <label>Email (demo only)</label><input id="editEmail" type="email" placeholder="Your email">
-              <label>About You</label><textarea id="editBio" placeholder="Write something about yourself..."></textarea>
-              <button class="primary-btn" type="submit">Save Profile</button>
-            </form>
+
+          <div class="section-heading"><div><span class="eyebrow">HANDPICKED</span><h2>Featured for you</h2></div></div>
+          <div class="featured-grid">
+            <article class="feature-card feature-large">
+              <img src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1000&q=85" alt="Night sky">
+              <div class="feature-overlay"><span>DISCOVER</span><h3>Explore the unknown</h3><button data-page="explore">Discover →</button></div>
+            </article>
+            <article class="feature-card">
+              <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=700&q=85" alt="Technology">
+              <div class="feature-overlay"><span>TECHNOLOGY</span><h3>Creative tools</h3><button data-page="tools">Explore →</button></div>
+            </article>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- FAVORITES -->
-      <section class="page" id="favorites">
-        <div class="page-intro"><span class="eyebrow">YOUR COLLECTION</span><h1>Your <em>favorites.</em></h1><p>Items you have saved from the gallery.</p></div>
-        <div class="panel"><div id="favoritesList" class="favorites-list"><p class="empty-state">Nothing saved yet. Open the gallery and tap ♡.</p></div></div>
-      </section>
-
-      <!-- NOTIFICATIONS -->
-      <section class="page" id="notifications">
-        <div class="page-intro"><span class="eyebrow">STAY UPDATED</span><h1>Your <em>notifications.</em></h1><p>Messages and workspace updates.</p></div>
-        <div class="panel">
-          <div class="panel-heading"><h2>Inbox</h2><button class="text-link" id="markAllRead">Mark all read</button></div>
-          <div id="notificationList" class="notification-list"></div>
-          <button class="secondary-btn" id="clearNotifications">Clear all</button>
-        </div>
-      </section>
-
-      <!-- SUBSCRIPTION -->
-      <section class="page" id="subscription">
-        <div class="page-intro center-intro"><span class="eyebrow">UNLOCK MORE POSSIBILITIES</span><h1>Choose your <em>experience.</em></h1><p>Explore the demo plans and their features.</p></div>
-        <div class="plans-grid">
-          <div class="plan-card">
-            <span class="plan-name">STARTER</span><h2>Free</h2><p>For everyday exploration.</p>
-            <ul><li>✓ Basic dashboard</li><li>✓ Gallery access</li><li>✓ Basic customization</li><li>✓ Guest browsing</li><li>✕ Advanced tools</li></ul>
-            <button class="secondary-btn plan-action" data-plan="Free">Current / Select Free</button>
+        <!-- EXPLORE -->
+        <section class="page" id="explore">
+          <div class="page-intro">
+            <span class="eyebrow">DISCOVER SOMETHING NEW</span>
+            <h2>Explore NEXORA</h2>
+            <p>Find interesting collections and useful spaces.</p>
           </div>
-          <div class="plan-card popular">
-            <span class="popular-label">MOST POPULAR</span><span class="plan-name">PRO</span><h2>₹199<small>/month</small></h2><p>For advanced experiences.</p>
-            <ul><li>✓ Everything in Free</li><li>✓ Advanced studio</li><li>✓ Exclusive themes</li><li>✓ Advanced analytics</li><li>✓ Power tools</li></ul>
-            <button class="primary-btn plan-action" data-plan="Pro">Try Demo Upgrade</button>
+          <div class="search-box"><span>⌕</span><input id="exploreSearch" type="search" placeholder="Search sections and collections..."><kbd>SEARCH</kbd></div>
+          <div class="explore-grid" id="exploreGrid">
+            <article class="explore-card" data-search="creative studio design art"><div class="explore-art art-one">✦</div><div class="explore-card-body"><span>CREATIVITY</span><h3>Creative Studio</h3><p>A space for ideas and inspiration.</p><button data-page="gallery">Open Studio →</button></div></article>
+            <article class="explore-card" data-search="technology digital tools"><div class="explore-art art-two">⌘</div><div class="explore-card-body"><span>TECHNOLOGY</span><h3>Digital Tools</h3><p>Explore useful digital utilities.</p><button data-page="tools">Explore Tools →</button></div></article>
+            <article class="explore-card" data-search="personal profile account"><div class="explore-art art-three">♙</div><div class="explore-card-body"><span>PERSONAL</span><h3>Your Profile</h3><p>Manage your personal information.</p><button data-page="profile">View Profile →</button></div></article>
+            <article class="explore-card" data-search="themes colors customize"><div class="explore-art art-four">◐</div><div class="explore-card-body"><span>PERSONALIZATION</span><h3>Theme Studio</h3><p>Change the look of your workspace.</p><button data-page="customize">Customize →</button></div></article>
+            <article class="explore-card" data-search="membership premium subscription"><div class="explore-art art-five">✧</div><div class="explore-card-body"><span>MEMBERSHIP</span><h3>Premium Demo</h3><p>Preview the premium experience.</p><button data-page="subscription">View Plans →</button></div></article>
+            <article class="explore-card" data-search="saved favorite collection"><div class="explore-art art-six">♡</div><div class="explore-card-body"><span>COLLECTIONS</span><h3>Favorites</h3><p>Keep your favorite items together.</p><button data-page="favorites">View Favorites →</button></div></article>
           </div>
-          <div class="plan-card">
-            <span class="plan-name">ULTIMATE</span><h2>₹499<small>/month</small></h2><p>Maximum demo access.</p>
-            <ul><li>✓ Everything in Pro</li><li>✓ All demo tools</li><li>✓ Extra customization</li><li>✓ Special profile badge</li><li>✓ Exclusive interface</li></ul>
-            <button class="secondary-btn plan-action" data-plan="Ultimate">Try Demo Upgrade</button>
+          <p id="noSearchResults" class="empty-state hidden">No matching sections found.</p>
+        </section>
+
+        <!-- GALLERY -->
+        <section class="page" id="gallery">
+          <div class="page-intro"><span class="eyebrow">VISUAL INSPIRATION</span><h2>Gallery</h2><p>A collection of images to inspire your imagination.</p></div>
+          <div class="gallery-grid">
+            <article class="gallery-item"><img src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=85" alt="Sunrise landscape"><div><span>01 / NATURE</span><h3>Golden Morning</h3><button class="favorite-btn" data-favorite="Golden Morning">♡ Save</button></div></article>
+            <article class="gallery-item"><img src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=900&q=85" alt="Starry sky"><div><span>02 / SPACE</span><h3>Infinite Night</h3><button class="favorite-btn" data-favorite="Infinite Night">♡ Save</button></div></article>
+            <article class="gallery-item"><img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=85" alt="Computer circuit"><div><span>03 / TECH</span><h3>Digital Future</h3><button class="favorite-btn" data-favorite="Digital Future">♡ Save</button></div></article>
+            <article class="gallery-item"><img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=900&q=85" alt="Ocean"><div><span>04 / OCEAN</span><h3>Blue Horizon</h3><button class="favorite-btn" data-favorite="Blue Horizon">♡ Save</button></div></article>
+            <article class="gallery-item"><img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=900&q=85" alt="Mountain"><div><span>05 / TRAVEL</span><h3>Quiet Escape</h3><button class="favorite-btn" data-favorite="Quiet Escape">♡ Save</button></div></article>
+            <article class="gallery-item"><img src="https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=900&q=85" alt="Forest"><div><span>06 / FOREST</span><h3>Into the Green</h3><button class="favorite-btn" data-favorite="Into the Green">♡ Save</button></div></article>
           </div>
-        </div>
+        </section>
 
-        <div class="cheat-panel">
-          <div class="cheat-icon">♛</div>
-          <div><span class="eyebrow">SPECIAL ACCESS</span><h2>Have a Cheat Code?</h2><p>Enter your access code to unlock the demo premium experience.</p></div>
-          <form id="cheatForm" class="cheat-form">
-            <input id="cheatInput" type="password" inputmode="numeric" placeholder="Enter your cheat code">
-            <button class="primary-btn" type="submit">UNLOCK ↗</button>
-          </form>
-          <small id="cheatMessage">Demo access code is required to unlock premium features.</small>
-        </div>
-        <p class="disclaimer">All plans, prices and upgrades are demonstration features. No real payment or paid subscription is processed.</p>
-      </section>
-
-      <!-- PREMIUM TOOLS -->
-      <section class="page" id="tools">
-        <div class="page-intro"><span class="eyebrow">EXCLUSIVE ACCESS</span><h1>Premium <em>tools.</em></h1><p>Explore your unlocked workspace tools.</p></div>
-        <div class="premium-lock" id="premiumLock"><div>♛</div><h2>Premium Access Required</h2><p>Unlock the demo premium experience to explore these tools.</p><button class="primary-btn" data-page="subscription">Explore Premium</button></div>
-        <div class="feature-grid hidden" id="premiumToolsGrid">
-          <div class="feature-card"><span>✧</span><h3>Advanced Studio</h3><p>Exclusive workspace.</p><small>UNLOCKED</small></div>
-          <div class="feature-card"><span>◉</span><h3>Analytics</h3><p>Detailed demo statistics.</p><small>UNLOCKED</small></div>
-          <div class="feature-card"><span>♛</span><h3>Exclusive Themes</h3><p>Special styles.</p><small>UNLOCKED</small></div>
-          <div class="feature-card"><span>⚡</span><h3>Power Tools</h3><p>Additional demo tools.</p><small>UNLOCKED</small></div>
-        </div>
-      </section>
-
-      <!-- CUSTOMIZE -->
-      <section class="page" id="customize">
-        <div class="page-intro"><span class="eyebrow">MAKE IT YOURS</span><h1>Theme <em>studio.</em></h1><p>Personalize the appearance of your workspace.</p></div>
-        <div class="panel">
-          <h2>Choose a Theme</h2>
-          <div class="theme-grid">
-            <button class="theme-choice" data-theme="dark"><span class="theme-swatch sw-dark"></span>Midnight Dark</button>
-            <button class="theme-choice" data-theme="light"><span class="theme-swatch sw-light"></span>Clean Light</button>
-            <button class="theme-choice" data-theme="amoled"><span class="theme-swatch sw-amoled"></span>AMOLED Black</button>
-            <button class="theme-choice" data-theme="ocean"><span class="theme-swatch sw-ocean"></span>Ocean Blue</button>
-            <button class="theme-choice" data-theme="forest"><span class="theme-swatch sw-forest"></span>Forest Green</button>
-            <button class="theme-choice" data-theme="sunset"><span class="theme-swatch sw-sunset"></span>Sunset Orange</button>
-            <button class="theme-choice" data-theme="rose"><span class="theme-swatch sw-rose"></span>Rose Pink</button>
-            <button class="theme-choice" data-theme="galaxy"><span class="theme-swatch sw-galaxy"></span>Purple Galaxy</button>
+        <!-- TOOLS -->
+        <section class="page" id="tools">
+          <div class="page-intro"><span class="eyebrow">YOUR DIGITAL TOOLBOX</span><h2>Tools</h2><p>Simple utilities that work directly in your browser.</p></div>
+          <div class="tools-grid">
+            <article class="tool-card"><div class="tool-icon">⌁</div><h3>Quick Notes</h3><p>Write something and save it on this device.</p><textarea id="quickNote" placeholder="Write your note here..."></textarea><button class="primary-btn" id="saveNote">Save Note</button><small id="noteStatus"></small></article>
+            <article class="tool-card"><div class="tool-icon">⌗</div><h3>Word Counter</h3><p>Count words and characters instantly.</p><textarea id="wordInput" placeholder="Type or paste your text..."></textarea><div class="counter-results"><span>Words <strong id="wordCount">0</strong></span><span>Characters <strong id="charCount">0</strong></span></div></article>
+            <article class="tool-card"><div class="tool-icon">◷</div><h3>Focus Timer</h3><p>Use a simple 25-minute focus session.</p><div class="timer-display" id="timerDisplay">25:00</div><div class="timer-actions"><button class="primary-btn" id="timerStart">Start</button><button class="secondary-btn" id="timerReset">Reset</button></div></article>
+            <article class="tool-card"><div class="tool-icon">⌘</div><h3>Random Idea</h3><p>Need inspiration? Generate a random idea.</p><div class="idea-display" id="ideaDisplay">Tap the button to get an idea.</div><button class="primary-btn" id="ideaButton">Generate Idea</button></article>
           </div>
-        </div>
-        <div class="panel">
-          <h2>Custom Accent Colour</h2>
-          <div class="color-row"><input type="color" id="accentPicker" value="#8b72ff"><span>Choose your own accent colour.</span></div>
-        </div>
-        <div class="panel">
-          <h2>Interface Preferences</h2>
-          <label class="switch-row">Enable animations <input type="checkbox" id="animationToggle" checked><span class="switch"></span></label>
-          <label class="switch-row">Compact interface <input type="checkbox" id="compactToggle"><span class="switch"></span></label>
-          <label class="switch-row">Show image cards <input type="checkbox" id="imagesToggle" checked><span class="switch"></span></label>
-        </div>
-        <div class="panel">
-          <h2>Custom Theme Name</h2>
-          <input id="themeName" placeholder="Example: My Galaxy Theme">
-          <button class="primary-btn" id="saveTheme">Save Current Theme</button>
-          <div id="savedThemes" class="saved-themes"></div>
-        </div>
-        <div class="panel">
-          <h2>Theme Backup</h2>
-          <p>Export or import your theme settings as JSON.</p>
-          <button class="secondary-btn" id="exportTheme">Export Theme</button>
-          <label class="secondary-btn import-label">Import Theme<input type="file" id="importTheme" accept=".json,application/json" hidden></label>
-          <button class="text-link" id="resetTheme">Reset to default</button>
-        </div>
-      </section>
+        </section>
 
-      <!-- SETTINGS -->
-      <section class="page" id="settings">
-        <div class="page-intro"><span class="eyebrow">CONTROL CENTER</span><h1>Workspace <em>settings.</em></h1><p>Manage your local experience.</p></div>
-        <div class="panel">
-          <h2>Account Preferences</h2>
-          <p>Login is optional. You can browse Nexora without an account.</p>
-          <button class="primary-btn" id="settingsLogin">Login / Register</button>
-          <button class="secondary-btn" id="guestBtn">Continue as Guest</button>
-          <button class="secondary-btn" id="logoutBtn">Logout / Clear Session</button>
-        </div>
-        <div class="panel">
-          <h2>Data Management</h2>
-          <p>Your demo preferences are saved in this browser.</p>
-          <button class="secondary-btn" id="downloadData">Export My Data</button>
-          <button class="danger-btn" id="resetData">Reset All Local Data</button>
-        </div>
-      </section>
+        <!-- PROFILE -->
+        <section class="page" id="profile">
+          <div class="page-intro"><span class="eyebrow">YOUR SPACE</span><h2>My Profile</h2><p>Manage your local demo profile.</p></div>
+          <div class="profile-layout">
+            <div class="panel profile-card"><div class="profile-avatar-large" id="profileAvatar">N</div><h3 id="profileDisplayName">Guest User</h3><p id="profileEmail">Not logged in</p><span class="status-pill" id="profileStatus">Guest mode</span><div class="profile-plan" id="profilePlan">Free Member</div><button class="primary-btn" id="profileLogin">Login / Register</button></div>
+            <div class="panel profile-edit"><div class="panel-heading"><h3>Edit profile</h3></div><form id="profileForm"><label>Display name<input id="editName" maxlength="30" placeholder="Your name"></label><label>Email<input id="editEmail" type="email" placeholder="Your email"></label><label>About you<textarea id="editBio" maxlength="200" placeholder="Write a short introduction..."></textarea></label><button class="primary-btn" type="submit">Save Changes</button></form></div>
+          </div>
+        </section>
 
-    </div>
+        <!-- SUBSCRIPTION -->
+        <section class="page" id="subscription">
+          <div class="page-intro"><span class="eyebrow">MEMBERSHIP</span><h2>Choose your experience</h2><p>This is a visual demo. No payment will be collected.</p></div>
+          <div class="plans-grid">
+            <article class="plan-card"><span class="plan-tag">STARTER</span><h3>Free</h3><div class="plan-price">₹0 <small>/ forever</small></div><p>Explore the essential workspace.</p><ul><li>✓ Dashboard access</li><li>✓ Basic tools</li><li>✓ Theme customization</li><li>✓ Local saved preferences</li></ul><button class="secondary-btn plan-action" data-plan="Free">Current / Select</button></article>
+            <article class="plan-card plan-featured"><span class="popular-tag">DEMO FEATURED</span><span class="plan-tag">ADVANCED</span><h3>Premium</h3><div class="plan-price">₹199 <small>/ month demo</small></div><p>Preview an enhanced experience.</p><ul><li>✓ Everything in Free</li><li>✓ Premium demo badge</li><li>✓ Extra visual themes</li><li>✓ Premium preview tools</li></ul><button class="primary-btn plan-action" data-plan="Premium Demo">Activate Demo</button></article>
+          </div>
+          <p class="disclaimer">Important: Membership selection is stored only in this browser. It is not a real subscription or payment system.</p>
+        </section>
 
-    <footer class="main-footer"><span>© 2026 NEXORA</span><span>Designed for exploration · HTML CSS JS</span><button data-page="settings">Settings</button></footer>
-  </main>
-</div>
+        <!-- THEME STUDIO -->
+        <section class="page" id="customize">
+          <div class="page-intro"><span class="eyebrow">MAKE IT YOURS</span><h2>Theme Studio</h2><p>Choose an accent color and customize your workspace.</p></div>
+          <div class="panel theme-panel"><h3>Choose your theme</h3><div class="theme-options">
+            <button class="theme-choice" data-theme-choice="violet"><span class="theme-dot violet-dot"></span><strong>Cosmic Violet</strong></button>
+            <button class="theme-choice" data-theme-choice="ocean"><span class="theme-dot ocean-dot"></span><strong>Ocean Blue</strong></button>
+            <button class="theme-choice" data-theme-choice="emerald"><span class="theme-dot emerald-dot"></span><strong>Emerald</strong></button>
+            <button class="theme-choice" data-theme-choice="sunset"><span class="theme-dot sunset-dot"></span><strong>Sunset</strong></button>
+            <button class="theme-choice" data-theme-choice="rose"><span class="theme-dot rose-dot"></span><strong>Rose</strong></button>
+          </div><h3>Custom accent color</h3><div class="color-row"><input type="color" id="accentPicker" value="#8b70ff"><span>Choose your own color</span></div><button class="secondary-btn" id="resetTheme">Reset Theme</button></div>
+        </section>
 
-<!-- MOBILE OVERLAY -->
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <!-- FAVORITES -->
+        <section class="page" id="favorites">
+          <div class="page-intro"><span class="eyebrow">YOUR COLLECTION</span><h2>Favorites</h2><p>Your saved gallery items appear here.</p></div>
+          <div class="panel"><div id="favoritesList" class="favorites-list"><p class="empty-state">No favorites saved yet. Visit the Gallery to save something.</p></div></div>
+        </section>
 
-<!-- LOGIN MODAL -->
-<div class="modal-backdrop" id="loginModal">
-  <div class="modal">
-    <button class="modal-close" data-close="loginModal">×</button>
-    <div class="modal-logo">N</div>
-    <span class="eyebrow">WELCOME TO NEXORA</span>
-    <h2 id="authTitle">Welcome back.</h2>
-    <p id="authSubtitle">Sign in or create a local demo account.</p>
-    <div class="auth-tabs">
-      <button class="auth-tab active" data-auth="login">Login</button>
-      <button class="auth-tab" data-auth="register">Register</button>
-    </div>
-    <form id="authForm">
-      <div id="registerFields" class="hidden">
-        <label>Full Name</label><input id="authName" placeholder="Your full name">
+        <!-- NOTIFICATIONS -->
+        <section class="page" id="notifications">
+          <div class="page-intro"><span class="eyebrow">STAY UPDATED</span><h2>Notifications</h2><p>Updates and messages for your workspace.</p></div>
+          <div class="panel"><div class="panel-heading"><h3>Your notifications</h3><button class="text-btn" id="markAllRead">Mark all as read</button></div><div id="notificationList" class="notification-list"></div></div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section class="page" id="settings">
+          <div class="page-intro"><span class="eyebrow">CONTROL CENTER</span><h2>Settings</h2><p>Manage your workspace preferences and demo data.</p></div>
+          <div class="settings-grid">
+            <div class="panel settings-card"><h3>Appearance</h3><label class="setting-row"><span><strong>Compact layout</strong><small>Reduce spacing in the workspace.</small></span><input type="checkbox" id="compactToggle"></label><label class="setting-row"><span><strong>Animations</strong><small>Enable interface transitions.</small></span><input type="checkbox" id="animationToggle" checked></label></div>
+            <div class="panel settings-card"><h3>Account</h3><p>Login is optional. You can use NEXORA as a guest.</p><button class="primary-btn" id="settingsLogin">Login / Register</button><button class="secondary-btn" id="logoutBtn">Log out</button></div>
+            <div class="panel settings-card"><h3>Data management</h3><p>Your demo information is stored in this browser only.</p><button class="secondary-btn" id="downloadData">Export my data</button><button class="danger-btn" id="resetData">Reset local data</button></div>
+          </div>
+          <p class="disclaimer">Do not enter real passwords or sensitive information. This website has no secure server-side authentication.</p>
+        </section>
+
       </div>
-      <label>Email</label><input id="authEmail" type="email" placeholder="you@example.com" required>
-      <label>Password</label><div class="password-wrap"><input id="authPassword" type="password" placeholder="Enter password" required><button type="button" id="togglePassword">Show</button></div>
-      <div id="confirmField" class="hidden"><label>Confirm Password</label><input id="authConfirm" type="password" placeholder="Repeat password"></div>
-      <button class="primary-btn full-btn" type="submit" id="authSubmit">Login</button>
-    </form>
-    <div class="modal-divider">OR</div>
-    <button class="secondary-btn full-btn" id="modalGuest">Continue as Guest</button>
-    <small class="security-note">Demo only: account information is stored locally in this browser. Do not use a real password.</small>
+
+      <footer class="footer"><span>© 2026 NEXORA</span><span>Built for ideas beyond ordinary.</span></footer>
+    </main>
   </div>
-</div>
 
-<!-- TOAST -->
-<div class="toast-container" id="toastContainer"></div>
+  <!-- LOGIN MODAL -->
+  <div class="modal-backdrop hidden" id="loginModal">
+    <div class="modal">
+      <button class="modal-close" data-close="loginModal">✕</button>
+      <div class="modal-logo">N</div>
+      <span class="eyebrow">WELCOME TO NEXORA</span>
+      <h2 id="authTitle">Welcome back</h2>
+      <p id="authSubtitle">Login to your local demo profile.</p>
+      <div class="auth-tabs"><button class="auth-tab active" data-auth="login">Login</button><button class="auth-tab" data-auth="register">Register</button></div>
+      <form id="authForm">
+        <div id="registerFields" class="hidden"><label>Your name<input id="authName" maxlength="30" placeholder="Enter your name"></label></div>
+        <label>Email<input id="authEmail" type="email" required placeholder="you@example.com"></label>
+        <label>Password<input id="authPassword" type="password" required minlength="4" placeholder="Demo password"></label>
+        <div id="confirmField" class="hidden"><label>Confirm password<input id="authConfirm" type="password" placeholder="Repeat password"></label></div>
+        <button class="primary-btn full-btn" type="submit" id="authSubmit">Login</button>
+      </form>
+      <button class="secondary-btn full-btn guest-btn" id="guestBtn">Continue as Guest</button>
+      <small class="modal-note">Demo only. Never use a real password here.</small>
+    </div>
+  </div>
 
-<!-- MOBILE BOTTOM NAV -->
-<nav class="mobile-nav">
-  <button data-page="dashboard" class="active"><span>⌂</span>Home</button>
-  <button data-page="explore"><span>◈</span>Explore</button>
-  <button data-page="gallery"><span>▧</span>Gallery</button>
-  <button data-page="profile"><span>♙</span>Profile</button>
-  <button data-page="settings"><span>⚙</span>Settings</button>
-</nav>
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="script.js"></script>
+</body>
+</html>
