@@ -1,289 +1,515 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#11111b">
-  <title>NEXORA — Beyond Ordinary</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXORA — Creative Studio</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--bg:#0b0d13;--panel:#141823;--panel2:#1c2230;--text:#f5f6fa;--muted:#9ba4b5;--accent:#a78bfa;--gold:#f5ca62;--border:#293043}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0}
+.app{display:flex;min-height:100vh}
+.sidebar{width:245px;background:#10131c;border-right:1px solid var(--border);padding:22px 15px;position:fixed;inset:0 auto 0 0;overflow-y:auto;z-index:10}
+.logo{font-size:25px;font-weight:800;letter-spacing:2px;padding:8px 12px 25px;color:white}
+.logo span{color:var(--accent)}
+.nav-label{font-size:10px;color:var(--muted);letter-spacing:2px;padding:14px 12px 8px}
+.navbtn{width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:transparent;color:#aeb5c5;padding:12px;border-radius:10px;margin:3px 0}
+.navbtn:hover,.navbtn.active{background:#28223d;color:white}
+.navbtn.active{border-left:3px solid var(--accent)}
+.main{margin-left:245px;width:calc(100% - 245px);padding:25px 30px 70px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:25px}
+.topbar h2{font-size:21px;margin:0}
+.top-actions{display:flex;gap:9px;align-items:center}
+.btn{padding:11px 16px;border-radius:10px;background:var(--accent);color:#151020;font-weight:700}
+.btn.secondary{background:var(--panel2);color:white;border:1px solid var(--border)}
+.btn.gold{background:linear-gradient(135deg,#ffe49a,#dba52e);color:#241900}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.page{display:none}.page.active{display:block}
+.hero{padding:30px;border-radius:20px;background:linear-gradient(120deg,#292044,#171b2c 65%,#222c42);margin-bottom:25px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(27px,4vw,42px);margin:0 0 10px}
+.hero p{color:#c4c3d5;max-width:620px;line-height:1.6}
+.hero .btn{margin-top:10px}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:25px 0 15px}
+.section-title h3{margin:0;font-size:18px}
+.section-title small{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+.tool-card{background:var(--panel);border:1px solid var(--border);border-radius:15px;overflow:hidden;cursor:pointer;transition:.2s}
+.tool-card:hover{transform:translateY(-4px);border-color:var(--accent)}
+.tool-card img{width:100%;height:135px;object-fit:cover;display:block}
+.tool-info{padding:14px}
+.tool-info h4{margin:0 0 6px;font-size:15px}
+.tool-info p{font-size:12px;color:var(--muted);margin:0;line-height:1.5}
+.vip-tag{display:inline-block;font-size:10px;color:#241900;background:var(--gold);padding:4px 7px;border-radius:5px;font-weight:800;margin-bottom:7px}
+.panel{background:var(--panel);border:1px solid var(--border);padding:18px;border-radius:15px;margin-bottom:17px}
+.panel h3{margin:0 0 14px}
+.muted{color:var(--muted);font-size:13px;line-height:1.6}
+.editor-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:16px}
+.preview{background:#050609;border-radius:13px;min-height:260px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#canvas{width:100%;max-height:440px;object-fit:contain}
+#video{display:none}
+.control{margin:12px 0}
+.control label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}
+.control input[type=range]{width:100%;accent-color:var(--accent)}
+.control input[type=text],.control input[type=number],.control select,.control textarea,.code-input{width:100%;padding:11px;background:#0c1019;color:white;border:1px solid var(--border);border-radius:9px}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1}
+.timeline{background:#0b0e16;border:1px solid var(--border);padding:13px;border-radius:12px;margin-top:14px}
+.track{height:34px;background:#20283a;border-radius:7px;margin:8px 0;position:relative;overflow:hidden}
+.track span{display:block;padding:9px;font-size:11px;white-space:nowrap}
+.track.video-track{background:#25445a}
+.track.audio-track{background:#28533f}
+.track.key-track{background:#4b3564}
+.timeline small{color:var(--muted)}
+.status{font-size:12px;color:var(--muted);margin-top:9px}
+.lock{color:var(--gold)}
+.gold-page{background:linear-gradient(150deg,#201909,#0d0c0a 55%,#2b210e);border:1px solid #70571d;border-radius:20px;padding:25px}
+.gold-page h1,.gold-page h2{color:#ffe5a0}
+.plans{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:22px 0}
+.plan{background:linear-gradient(150deg,#332914,#17140e);border:1px solid #82652c;border-radius:14px;padding:17px;text-align:center;position:relative}
+.plan.featured{border:2px solid #f5d174;transform:translateY(-5px)}
+.crown{font-size:30px;color:#ffdf82}
+.plan h3{color:#ffe5a0;margin:8px 0}
+.price{font-size:25px;font-weight:800;color:#fff0bf}
+.plan p{font-size:11px;color:#d3c39a;line-height:1.6;min-height:45px}
+.plan button{width:100%;background:#f1cd72;color:#241900;border-radius:8px;padding:10px;font-weight:800}
+.code-area{background:#2b2416;border:1px solid #80652e;padding:18px;border-radius:12px;margin-top:20px}
+.code-area input{background:#15120b;border-color:#80652e}
+.code-area h3{color:#ffe5a0}
+.feature-list{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.feature{padding:12px;background:#19160f;border:1px solid #4c3c20;border-radius:9px;font-size:12px;color:#f4dfac}
+.mobile-nav{display:none}
+input[type=file]{max-width:100%;color:var(--muted)}
+hr{border:0;border-top:1px solid var(--border);margin:18px 0}
+@media(max-width:950px){.grid{grid-template-columns:repeat(2,1fr)}.plans{grid-template-columns:repeat(2,1fr)}.editor-layout{grid-template-columns:1fr}}
+@media(max-width:650px){
+.sidebar{display:none}.main{margin:0;width:100%;padding:17px 13px 85px}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tool-card img{height:105px}.tool-info{padding:10px}.tool-info h4{font-size:13px}
+.hero{padding:22px}.plans{gap:8px}.plan{padding:11px 8px}.plan.featured{transform:none}
+.price{font-size:21px}.topbar h2{font-size:17px}
+.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:#111520;border-top:1px solid var(--border);z-index:20;justify-content:space-around;padding:8px 3px}
+.mobile-nav button{background:transparent;color:#b7bfd0;font-size:10px;padding:7px 4px}
+.mobile-nav button span{display:block;font-size:18px;margin-bottom:3px}
+.feature-list{grid-template-columns:1fr}
+}
+</style>
 </head>
-<body data-theme="violet">
+<body>
+<div class="app">
+<aside class="sidebar">
+<div class="logo">NEXORA<span>.</span></div>
+<div class="nav-label">WORKSPACE</div>
+<button class="navbtn active" onclick="showPage('home',this)">⌂ Dashboard</button>
+<button class="navbtn" onclick="showPage('editor',this)">▣ Video Editor</button>
+<button class="navbtn" onclick="showPage('photo',this)">▧ Photo Studio</button>
+<button class="navbtn" onclick="showPage('audio',this)">♫ Voice Studio</button>
+<button class="navbtn" onclick="showPage('tools',this)">✦ Creative Tools</button>
+<div class="nav-label">PERSONAL</div>
+<button class="navbtn" onclick="showPage('projects',this)">▤ My Projects</button>
+<button class="navbtn" onclick="showPage('settings',this)">⚙ Settings</button>
+<div class="nav-label">MEMBERSHIP</div>
+<button class="navbtn" onclick="showPage('subscription',this)">♛ VIP Membership</button>
+</aside>
 
-  <div class="app">
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+<main class="main">
+<div class="topbar">
+<h2 id="pageTitle">Dashboard</h2>
+<div class="top-actions">
+<span id="planStatus" class="vip-tag">FREE PLAN</span>
+<button class="btn secondary" onclick="showPage('subscription')">♛ VIP</button>
+</div>
+</div>
 
-    <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="brand-logo">N</div>
-        <div>
-          <h2>NEXORA</h2>
-          <small>BEYOND ORDINARY</small>
-        </div>
-        <button class="icon-btn close-sidebar" id="closeSidebar">✕</button>
-      </div>
+<section id="home" class="page active">
+<div class="hero">
+<h1>Create Beyond Limits.</h1>
+<p>One creative workspace for video editing, photo design, audio recording, effects, filters and productivity.</p>
+<button class="btn" onclick="showPage('editor')">Open Editing Studio →</button>
+</div>
+<div class="section-title"><h3>Creative Studio</h3><small>Choose your workspace</small></div>
+<div class="grid" id="homeCards"></div>
+<div class="section-title"><h3>Quick Tools</h3></div>
+<div class="grid" id="quickCards"></div>
+</section>
 
-      <div class="user-mini">
-        <div class="avatar" id="miniAvatar">N</div>
-        <div class="user-mini-info">
-          <strong id="miniName">Guest User</strong>
-          <small id="miniPlan">Free Member</small>
-        </div>
-        <button class="icon-btn" id="accountBtn" title="Account">⌄</button>
-      </div>
+<section id="editor" class="page">
+<div class="hero"><h1>Video Editing Studio</h1><p>Import a video, add text, adjust filters, record voice and create your edit.</p></div>
+<div class="panel">
+<h3>Import Video</h3>
+<input type="file" id="videoFile" accept="video/*">
+<div class="status" id="videoStatus">No video selected.</div>
+</div>
+<div class="editor-layout">
+<div>
+<div class="panel">
+<h3>Preview</h3>
+<div class="preview"><canvas id="canvas" width="1280" height="720"></canvas></div>
+<video id="video" playsinline crossorigin="anonymous"></video>
+<div class="row" style="margin-top:12px">
+<button class="btn" onclick="playVideo()">▶ Play</button>
+<button class="btn secondary" onclick="pauseVideo()">Ⅱ Pause</button>
+<button class="btn secondary" onclick="resetVideo()">↺ Reset</button>
+</div>
+<div class="control"><label>Video Position</label><input id="seek" type="range" min="0" max="100" value="0" oninput="seekVideo(this.value)"></div>
+</div>
+<div class="panel">
+<h3>Timeline</h3>
+<small class="muted">Your video, voice and animation tracks</small>
+<div class="timeline">
+<small>VIDEO TRACK</small><div class="track video-track"><span id="videoTrackLabel">Import a video to begin</span></div>
+<small>VOICE TRACK</small><div class="track audio-track"><span id="voiceTrackLabel">No voice recording</span></div>
+<small>KEYFRAME TRACK</small><div class="track key-track"><span id="keyTrackLabel">No keyframes yet</span></div>
+</div>
+<div class="row" style="margin-top:12px">
+<button class="btn secondary" onclick="addKeyframe()">◆ Add Keyframe</button>
+<button class="btn secondary" onclick="clearKeyframes()">Clear Keyframes</button>
+</div>
+<div class="status" id="keyStatus">Keyframes: 0</div>
+</div>
+</div>
+<div>
+<div class="panel">
+<h3>Video Controls</h3>
+<div class="control"><label>Brightness</label><input id="brightness" type="range" min="50" max="200" value="100" oninput="updatePreview()"></div>
+<div class="control"><label>Contrast</label><input id="contrast" type="range" min="50" max="200" value="100" oninput="updatePreview()"></div>
+<div class="control"><label>Saturation</label><input id="saturation" type="range" min="0" max="200" value="100" oninput="updatePreview()"></div>
+<div class="control"><label>Blur</label><input id="blur" type="range" min="0" max="12" value="0" oninput="updatePreview()"></div>
+<div class="control"><label>Video Speed</label><select id="speed" onchange="changeSpeed()"><option value=".5">0.5x</option><option value=".75">0.75x</option><option value="1" selected>1x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></div>
+</div>
+<div class="panel">
+<h3>Text Overlay</h3>
+<div class="control"><label>Text</label><input id="overlayText" type="text" placeholder="Write your text..." oninput="updatePreview()"></div>
+<div class="control"><label>Text Size</label><input id="textSize" type="range" min="20" max="100" value="48" oninput="updatePreview()"></div>
+<div class="control"><label>Text Position</label><select id="textPosition" onchange="updatePreview()"><option value="bottom">Bottom</option><option value="center">Center</option><option value="top">Top</option></select></div>
+</div>
+<div class="panel">
+<h3>Export</h3>
+<div class="control"><label>Quality</label><select id="quality"><option value="720">720p</option><option value="1080">1080p</option><option value="2160">4K</option></select></div>
+<button class="btn gold" style="width:100%" onclick="exportVideo()" id="exportBtn">♛ Export Video</button>
+<div class="status" id="exportStatus">Export requires VIP membership.</div>
+</div>
+</div>
+</div>
+</section>
 
-      <div class="nav-label">WORKSPACE</div>
-      <nav class="navigation">
-        <button class="nav-item active" data-page="dashboard"><span>◈</span> Dashboard</button>
-        <button class="nav-item" data-page="explore"><span>⌕</span> Explore</button>
-        <button class="nav-item" data-page="gallery"><span>▦</span> Gallery</button>
-        <button class="nav-item" data-page="tools"><span>⚙</span> Tools</button>
-        <button class="nav-item" data-page="favorites"><span>♡</span> Favorites</button>
-      </nav>
+<section id="photo" class="page">
+<div class="hero"><h1>Photo Studio</h1><p>Edit your pictures with filters, text and image adjustments.</p></div>
+<div class="panel">
+<input type="file" id="photoFile" accept="image/*">
+<div class="preview" style="margin-top:14px"><canvas id="photoCanvas" width="900" height="600"></canvas></div>
+<div class="control"><label>Brightness</label><input type="range" min="50" max="200" value="100" id="photoBright" oninput="drawPhoto()"></div>
+<div class="control"><label>Contrast</label><input type="range" min="50" max="200" value="100" id="photoContrast" oninput="drawPhoto()"></div>
+<div class="control"><label>Saturation</label><input type="range" min="0" max="200" value="100" id="photoSat" oninput="drawPhoto()"></div>
+<button class="btn" onclick="savePhoto()">Save Photo</button>
+<p class="muted">Photo saving is available in your browser.</p>
+</div>
+</section>
 
-      <div class="nav-label">PERSONAL</div>
-      <nav class="navigation">
-        <button class="nav-item" data-page="profile"><span>♙</span> My Profile</button>
-        <button class="nav-item" data-page="subscription"><span>✧</span> Membership</button>
-        <button class="nav-item" data-page="customize"><span>◐</span> Theme Studio</button>
-        <button class="nav-item" data-page="notifications">
-          <span>♧</span> Notifications
-          <span class="nav-count" id="navNotificationCount">2</span>
-        </button>
-        <button class="nav-item" data-page="settings"><span>☷</span> Settings</button>
-      </nav>
+<section id="audio" class="page">
+<div class="hero"><h1>Voice Studio</h1><p>Record your voice, preview it and add it to your editing project.</p></div>
+<div class="panel">
+<h3>Voice Recorder</h3>
+<div class="row">
+<button class="btn" onclick="startRecording()" id="recordBtn">● Start Recording</button>
+<button class="btn secondary" onclick="stopRecording()" id="stopBtn" disabled>■ Stop</button>
+</div>
+<p class="status" id="recordStatus">Microphone permission is required.</p>
+<audio id="voicePlayer" controls style="width:100%;margin-top:12px"></audio>
+<hr>
+<h3>Voice Enhancement Controls</h3>
+<div class="control"><label>Volume</label><input type="range" min="0" max="200" value="100" id="voiceVolume"></div>
+<div class="control"><label>Pitch</label><input type="range" min="50" max="150" value="100" id="voicePitch"></div>
+<div class="control"><label>Playback Speed</label><input type="range" min="50" max="150" value="100" id="voiceSpeed"></div>
+<button class="btn" onclick="addVoiceToTimeline()">＋ Add Voice to Timeline</button>
+<p class="muted">These controls adjust playback. Advanced AI noise removal can be added in a later version.</p>
+</div>
+</section>
 
-      <div class="sidebar-bottom">
-        <div class="upgrade-card">
-          <div class="upgrade-icon">✦</div>
-          <strong>Unlock more possibilities</strong>
-          <p>Explore the premium demo experience.</p>
-          <button class="small-primary" data-page="subscription">Explore Plans →</button>
-        </div>
-        <small class="sidebar-version">NEXORA v1.0 · Personal Edition</small>
-      </div>
-    </aside>
+<section id="tools" class="page">
+<div class="hero"><h1>Creative Tools</h1><p>Useful tools for creators, students and designers.</p></div>
+<div class="grid" id="allTools"></div>
+</section>
 
-    <main class="main">
-      <header class="topbar">
-        <div class="topbar-left">
-          <button class="icon-btn menu-toggle" id="menuToggle">☰</button>
-          <div>
-            <div class="breadcrumb">Workspace / <span id="pageName">Dashboard</span></div>
-            <h1 id="topTitle">Dashboard</h1>
-          </div>
-        </div>
-        <div class="topbar-actions">
-          <button class="icon-btn" id="notificationBtn" title="Notifications">♧</button>
-          <button class="avatar top-avatar" id="topAvatar">N</button>
-        </div>
-      </header>
+<section id="projects" class="page">
+<div class="hero"><h1>My Projects</h1><p>Your recent browser projects and workspace.</p></div>
+<div class="panel"><h3>Local Workspace</h3><p class="muted">Projects are processed in this browser. Download your work to keep a copy.</p><button class="btn secondary" onclick="showPage('editor')">Open Video Editor</button></div>
+</section>
 
-      <div class="content">
+<section id="settings" class="page">
+<div class="hero"><h1>Settings</h1><p>Customize your NEXORA experience.</p></div>
+<div class="panel">
+<h3>Appearance</h3>
+<div class="row">
+<button class="btn secondary" onclick="setTheme('dark')">Dark Theme</button>
+<button class="btn secondary" onclick="setTheme('purple')">Purple Theme</button>
+<button class="btn secondary" onclick="setTheme('gold')">Gold Theme</button>
+</div>
+<hr>
+<h3>Membership</h3>
+<p class="muted">Current status: <strong id="settingsPlan">Free</strong></p>
+<button class="btn secondary" onclick="returnFree()">Return to Free Plan</button>
+</div>
+</section>
 
-        <!-- DASHBOARD -->
-        <section class="page active" id="dashboard">
-          <div class="welcome-banner">
-            <div class="welcome-content">
-              <span class="eyebrow">YOUR PERSONAL WORKSPACE</span>
-              <h2>Welcome back, <span id="welcomeName">Explorer</span> ✨</h2>
-              <p>Your ideas deserve a space beyond ordinary.</p>
-              <button class="primary-btn" data-page="explore">Explore Workspace <span>→</span></button>
-            </div>
-            <div class="banner-art">
-              <div class="orbit orbit-one"></div>
-              <div class="orbit orbit-two"></div>
-              <div class="planet">N</div>
-              <div class="spark spark-one">✦</div>
-              <div class="spark spark-two">✧</div>
-            </div>
-          </div>
+<section id="subscription" class="page">
+<div class="gold-page">
+<div style="text-align:center;padding:15px">
+<div style="font-size:48px;color:#ffe5a0">♛</div>
+<h1 style="font-size:34px;margin:5px">NEXORA VIP</h1>
+<p style="color:#d8c28d">UNLOCK YOUR CREATIVE POTENTIAL</p>
+</div>
+<div class="plans">
+<div class="plan"><div class="crown">♛</div><h3>VIP Basic</h3><div class="price">₹49</div><p>Essential premium tools and selected effects.</p><button onclick="selectPlan('VIP Basic')">Choose Plan</button></div>
+<div class="plan"><div class="crown">♛</div><h3>VIP Standard</h3><div class="price">₹99</div><p>More effects, templates and creative tools.</p><button onclick="selectPlan('VIP Standard')">Choose Plan</button></div>
+<div class="plan featured"><div class="crown">👑</div><div class="vip-tag">MOST POPULAR</div><h3>VIP Professional</h3><div class="price">₹199</div><p>Advanced editing tools and premium features.</p><button onclick="selectPlan('VIP Professional')">Choose Plan</button></div>
+<div class="plan"><div class="crown">👑</div><h3>VIP Ultimate</h3><div class="price">₹399</div><p>Access to the complete premium feature set.</p><button onclick="selectPlan('VIP Ultimate')">Choose Plan</button></div>
+</div>
+<div class="panel" style="background:#241d10;border-color:#80652e">
+<h3 style="color:#ffe5a0">VIP Benefits</h3>
+<div class="feature-list">
+<div class="feature">✓ Premium Video Export</div><div class="feature">✓ Advanced Effects & Filters</div>
+<div class="feature">✓ Keyframe Tools</div><div class="feature">✓ Premium Templates</div>
+<div class="feature">✓ Advanced Editing Controls</div><div class="feature">✓ Exclusive Creative Tools</div>
+</div>
+</div>
+<div class="code-area">
+<h3>♛ Membership Access</h3>
+<p style="font-size:12px;color:#d6c59d">Enter your access code to unlock VIP features.</p>
+<input class="code-input" id="accessCode" type="password" placeholder="Enter access code">
+<button class="btn gold" style="width:100%;margin-top:10px" onclick="unlockVIP()">Unlock VIP</button>
+<p id="codeMessage" class="status"></p>
+</div>
+<div class="panel" style="background:#241d10;border-color:#80652e;margin-top:15px">
+<h3 style="color:#ffe5a0">Membership Status</h3>
+<p id="membershipStatus" style="color:#e8d5a4">Free Membership</p>
+<p class="muted">Selected Plan: <span id="selectedPlan">None</span></p>
+<button class="btn secondary" onclick="returnFree()">Return to Free Plan</button>
+</div>
+<p style="text-align:center;color:#c5b58e;font-size:10px;margin-top:20px">NEXORA MEMBERSHIP</p>
+</div>
+</section>
+</main>
+</div>
 
-          <div class="section-heading">
-            <div><span class="eyebrow">OVERVIEW</span><h2>Your workspace</h2></div>
-            <span class="date-text" id="todayDate"></span>
-          </div>
+<div class="mobile-nav">
+<button onclick="showPage('home')"><span>⌂</span>Home</button>
+<button onclick="showPage('editor')"><span>▣</span>Edit</button>
+<button onclick="showPage('photo')"><span>▧</span>Photo</button>
+<button onclick="showPage('audio')"><span>♫</span>Audio</button>
+<button onclick="showPage('subscription')"><span>♛</span>VIP</button>
+</div>
 
-          <div class="stats-grid">
-            <article class="stat-card">
-              <div class="stat-icon purple">◈</div>
-              <span>Membership</span>
-              <strong id="statPlan">Free</strong>
-              <small>Your current plan</small>
-            </article>
-            <article class="stat-card">
-              <div class="stat-icon cyan">▦</div>
-              <span>Available sections</span>
-              <strong id="statFeatures">10</strong>
-              <small>Explore your workspace</small>
-            </article>
-            <article class="stat-card">
-              <div class="stat-icon pink">♡</div>
-              <span>Saved favorites</span>
-              <strong id="statSaved">0</strong>
-              <small>Your saved items</small>
-            </article>
-            <article class="stat-card">
-              <div class="stat-icon orange">↗</div>
-              <span>Recent activity</span>
-              <strong id="statActivity">0</strong>
-              <small>Actions on this device</small>
-            </article>
-          </div>
+<script>
+const cards=[
+["Video Editor","Trim, split, filters and timeline editing","https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=700","editor"],
+["Keyframe Animation","Animate position, scale and rotation","https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=700","editor"],
+["Effects & Filters","Cinematic, glitch, blur and glow","https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?w=700","editor"],
+["Photo Studio","Adjust and enhance your pictures","https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=700","photo"],
+["Voice Studio","Record and prepare voiceovers","https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=700","audio"],
+["Text Animation","Titles, captions and text overlays","https://images.unsplash.com/photo-1455390582262-044cdead277a?w=700","editor"],
+["Mask Studio","Create creative mask effects","https://images.unsplash.com/photo-1536240478700-b869070f9279?w=700","editor"],
+["Motion Tracking","Plan object and text tracking","https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=700","editor"],
+["Speed Curve","Control video speed and motion","https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=700","editor"],
+["Green Screen","Chroma key editing workspace","https://images.unsplash.com/photo-1485846234645-a62644f84728?w=700","editor"],
+["Color Grading","Adjust color, tone and contrast","https://images.unsplash.com/photo-1500534623283-312aade485b7?w=700","editor"],
+["Audio Mixer","Manage music and voice tracks","https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=700","audio"],
+["Thumbnail Maker","Design creator thumbnails","https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=700","photo"],
+["Logo Animation","Create intro and outro concepts","https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=700","tools"],
+["Subtitle Studio","Organize and style subtitles","https://images.unsplash.com/photo-1455390582262-044cdead277a?w=700","tools"],
+["Overlay Studio","Explore overlays and visual layers","https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=700","editor"]
+];
+function makeCard(c){return `<div class="tool-card" onclick="openTool('${c[3]}')"><img src="${c[2]}" alt="${c[0]}" loading="lazy"><div class="tool-info"><h4>${c[0]}</h4><p>${c[1]}</p></div></div>`}
+document.getElementById('homeCards').innerHTML=cards.slice(0,6).map(makeCard).join('');
+document.getElementById('quickCards').innerHTML=cards.slice(6,12).map(makeCard).join('');
+document.getElementById('allTools').innerHTML=cards.map(makeCard).join('');
+let currentPage='home';
+function showPage(id,btn){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));
+if(btn)btn.classList.add('active');
+else document.querySelectorAll('.navbtn').forEach(b=>{if(b.getAttribute('onclick')?.includes("'"+id+"'"))b.classList.add('active')});
+currentPage=id;
+document.getElementById('pageTitle').textContent={home:'Dashboard',editor:'Video Editing Studio',photo:'Photo Studio',audio:'Voice Studio',tools:'Creative Tools',projects:'My Projects',settings:'Settings',subscription:'VIP Membership'}[id]||id;
+window.scrollTo(0,0);
+}
+function openTool(id){showPage(['editor','photo','audio'].includes(id)?id:'tools')}
+function isVIP(){return localStorage.getItem('nexora_vip')==='yes'}
+function updateMembership(){
+let vip=isVIP();
+document.getElementById('planStatus').textContent=vip?'VIP UNLOCKED':'FREE PLAN';
+document.getElementById('settingsPlan').textContent=vip?'VIP':'Free';
+document.getElementById('membershipStatus').textContent=vip?'♛ VIP Membership Active':'Free Membership';
+document.getElementById('exportStatus').textContent=vip?'VIP access active. Export is available.':'Export requires VIP membership.';
+document.getElementById('exportBtn').disabled=!vip;
+}
+function unlockVIP(){
+let code=document.getElementById('accessCode').value;
+if(code==="CHITCODE'0987654321'"){
+localStorage.setItem('nexora_vip','yes');
+document.getElementById('codeMessage').textContent='VIP unlocked successfully!';
+document.getElementById('codeMessage').style.color='#ffe5a0';
+}else{
+document.getElementById('codeMessage').textContent='Invalid access code. Please try again.';
+document.getElementById('codeMessage').style.color='#ff8c8c';
+}
+updateMembership();
+}
+function returnFree(){
+localStorage.removeItem('nexora_vip');
+updateMembership();
+alert('You are now on the Free Plan.');
+}
+function selectPlan(name){
+document.getElementById('selectedPlan').textContent=name;
+alert(name+' selected. Enter your membership access code to unlock VIP features.');
+}
+function setTheme(theme){
+if(theme==='purple'){document.documentElement.style.setProperty('--accent','#c084fc')}
+if(theme==='gold'){document.documentElement.style.setProperty('--accent','#e8bd54')}
+if(theme==='dark'){document.documentElement.style.setProperty('--accent','#a78bfa')}
+}
+updateMembership();
 
-          <div class="dashboard-grid">
-            <div class="panel">
-              <div class="panel-heading"><div><span class="eyebrow">QUICK ACCESS</span><h3>Explore sections</h3></div></div>
-              <div class="quick-grid">
-                <button class="quick-card" data-page="explore"><span>⌕</span><strong>Explore</strong><small>Discover content</small></button>
-                <button class="quick-card" data-page="gallery"><span>▦</span><strong>Gallery</strong><small>Visual collection</small></button>
-                <button class="quick-card" data-page="tools"><span>⚙</span><strong>Tools</strong><small>Useful utilities</small></button>
-                <button class="quick-card" data-page="customize"><span>◐</span><strong>Customize</strong><small>Make it yours</small></button>
-              </div>
-            </div>
-            <div class="panel">
-              <div class="panel-heading"><div><span class="eyebrow">YOUR JOURNEY</span><h3>Recent activity</h3></div></div>
-              <div id="activityList" class="activity-list"><p class="empty-state">Your activity will appear here.</p></div>
-            </div>
-          </div>
+const video=document.getElementById('video'),canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+let videoURL=null,keyframes=[],voiceBlob=null,voiceURL=null,recorder=null,recordChunks=[];
+function drawFrame(){
+ctx.fillStyle='#080a10';ctx.fillRect(0,0,canvas.width,canvas.height);
+if(video.readyState>=2){
+let scale=Math.min(canvas.width/video.videoWidth,canvas.height/video.videoHeight);
+let w=video.videoWidth*scale,h=video.videoHeight*scale;
+let x=(canvas.width-w)/2,y=(canvas.height-h)/2;
+let b=document.getElementById('brightness').value;
+let c=document.getElementById('contrast').value;
+let s=document.getElementById('saturation').value;
+let blur=document.getElementById('blur').value;
+ctx.filter=`brightness(${b}%) contrast(${c}%) saturate(${s}%) blur(${blur}px)`;
+ctx.drawImage(video,x,y,w,h);ctx.filter='none';
+let text=document.getElementById('overlayText').value;
+if(text){
+ctx.font=`bold ${document.getElementById('textSize').value}px Inter,Arial`;
+ctx.textAlign='center';ctx.lineWidth=4;ctx.strokeStyle='black';ctx.fillStyle='white';
+let pos=document.getElementById('textPosition').value;
+let ty=pos==='top'?80:pos==='center'?canvas.height/2:canvas.height-65;
+ctx.strokeText(text,canvas.width/2,ty);ctx.fillText(text,canvas.width/2,ty);
+}
+document.getElementById('seek').value=video.duration?(video.currentTime/video.duration)*100:0;
+}
+requestAnimationFrame(drawFrame);
+}
+drawFrame();
+document.getElementById('videoFile').addEventListener('change',e=>{
+let file=e.target.files[0];if(!file)return;
+if(videoURL)URL.revokeObjectURL(videoURL);
+videoURL=URL.createObjectURL(file);video.src=videoURL;
+video.onloadedmetadata=()=>{document.getElementById('videoStatus').textContent=file.name+' • '+video.duration.toFixed(1)+' seconds';document.getElementById('videoTrackLabel').textContent=file.name;};
+});
+function playVideo(){if(video.src)video.play()}
+function pauseVideo(){video.pause()}
+function resetVideo(){video.pause();video.currentTime=0}
+function seekVideo(v){if(video.duration)video.currentTime=(v/100)*video.duration}
+function updatePreview(){}
+function changeSpeed(){video.playbackRate=Number(document.getElementById('speed').value)}
+function addKeyframe(){
+if(!video.src){alert('Import a video first.');return}
+keyframes.push({time:video.currentTime,scale:1,rotation:0});
+document.getElementById('keyTrackLabel').textContent=keyframes.length+' keyframe(s) added';
+document.getElementById('keyStatus').textContent='Keyframes: '+keyframes.length;
+}
+function clearKeyframes(){keyframes=[];document.getElementById('keyTrackLabel').textContent='No keyframes yet';document.getElementById('keyStatus').textContent='Keyframes: 0'}
 
-          <div class="section-heading"><div><span class="eyebrow">HANDPICKED</span><h2>Featured for you</h2></div></div>
-          <div class="featured-grid">
-            <article class="feature-card feature-large">
-              <img src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1000&q=85" alt="Night sky">
-              <div class="feature-overlay"><span>DISCOVER</span><h3>Explore the unknown</h3><button data-page="explore">Discover →</button></div>
-            </article>
-            <article class="feature-card">
-              <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=700&q=85" alt="Technology">
-              <div class="feature-overlay"><span>TECHNOLOGY</span><h3>Creative tools</h3><button data-page="tools">Explore →</button></div>
-            </article>
-          </div>
-        </section>
+async function exportVideo(){
+if(!isVIP()){showPage('subscription');alert('VIP membership is required to export.');return}
+if(!video.src){alert('Please import a video first.');return}
+if(!window.MediaRecorder||!canvas.captureStream){alert('Video export is not supported by this browser. Try a recent Chrome browser.');return}
+try{
+video.pause();video.currentTime=0;await video.play();
+const stream=canvas.captureStream(30);
+let audioContext=null;
+if(voiceBlob){
+audioContext=new AudioContext();
+const audio=new Audio(voiceURL);audio.crossOrigin='anonymous';
+const source=audioContext.createMediaElementSource(audio);
+const dest=audioContext.createMediaStreamDestination();
+source.connect(dest);source.connect(audioContext.destination);
+dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
+audio.play();
+}
+const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';
+const mr=new MediaRecorder(stream,{mimeType:mime});
+let chunks=[];
+mr.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+mr.onstop=()=>{
+const blob=new Blob(chunks,{type:'video/webm'});
+const url=URL.createObjectURL(blob);
+const a=document.createElement('a');a.href=url;a.download='NEXORA-Export.webm';a.click();
+document.getElementById('exportStatus').textContent='Export complete.';
+stream.getTracks().forEach(t=>t.stop());
+if(audioContext)audioContext.close();
+};
+document.getElementById('exportStatus').textContent='Recording export... Keep this tab open until finished.';
+mr.start();
+video.onended=()=>{if(mr.state==='recording')mr.stop()};
+}catch(err){alert('Export error: '+err.message)}
+}
 
-        <!-- EXPLORE -->
-        <section class="page" id="explore">
-          <div class="page-intro">
-            <span class="eyebrow">DISCOVER SOMETHING NEW</span>
-            <h2>Explore NEXORA</h2>
-            <p>Find interesting collections and useful spaces.</p>
-          </div>
-          <div class="search-box"><span>⌕</span><input id="exploreSearch" type="search" placeholder="Search sections and collections..."><kbd>SEARCH</kbd></div>
-          <div class="explore-grid" id="exploreGrid">
-            <article class="explore-card" data-search="creative studio design art"><div class="explore-art art-one">✦</div><div class="explore-card-body"><span>CREATIVITY</span><h3>Creative Studio</h3><p>A space for ideas and inspiration.</p><button data-page="gallery">Open Studio →</button></div></article>
-            <article class="explore-card" data-search="technology digital tools"><div class="explore-art art-two">⌘</div><div class="explore-card-body"><span>TECHNOLOGY</span><h3>Digital Tools</h3><p>Explore useful digital utilities.</p><button data-page="tools">Explore Tools →</button></div></article>
-            <article class="explore-card" data-search="personal profile account"><div class="explore-art art-three">♙</div><div class="explore-card-body"><span>PERSONAL</span><h3>Your Profile</h3><p>Manage your personal information.</p><button data-page="profile">View Profile →</button></div></article>
-            <article class="explore-card" data-search="themes colors customize"><div class="explore-art art-four">◐</div><div class="explore-card-body"><span>PERSONALIZATION</span><h3>Theme Studio</h3><p>Change the look of your workspace.</p><button data-page="customize">Customize →</button></div></article>
-            <article class="explore-card" data-search="membership premium subscription"><div class="explore-art art-five">✧</div><div class="explore-card-body"><span>MEMBERSHIP</span><h3>Premium Demo</h3><p>Preview the premium experience.</p><button data-page="subscription">View Plans →</button></div></article>
-            <article class="explore-card" data-search="saved favorite collection"><div class="explore-art art-six">♡</div><div class="explore-card-body"><span>COLLECTIONS</span><h3>Favorites</h3><p>Keep your favorite items together.</p><button data-page="favorites">View Favorites →</button></div></article>
-          </div>
-          <p id="noSearchResults" class="empty-state hidden">No matching sections found.</p>
-        </section>
+let photoImage=null;
+document.getElementById('photoFile').addEventListener('change',e=>{
+let f=e.target.files[0];if(!f)return;
+photoImage=new Image();photoImage.onload=drawPhoto;photoImage.src=URL.createObjectURL(f);
+});
+function drawPhoto(){
+let c=document.getElementById('photoCanvas'),p=c.getContext('2d');
+p.fillStyle='#080a10';p.fillRect(0,0,c.width,c.height);
+if(!photoImage)return;
+let scale=Math.min(c.width/photoImage.width,c.height/photoImage.height);
+let w=photoImage.width*scale,h=photoImage.height*scale;
+p.filter=`brightness(${document.getElementById('photoBright').value}%) contrast(${document.getElementById('photoContrast').value}%) saturate(${document.getElementById('photoSat').value}%)`;
+p.drawImage(photoImage,(c.width-w)/2,(c.height-h)/2,w,h);p.filter='none';
+}
+function savePhoto(){
+if(!photoImage){alert('Choose a photo first.');return}
+let a=document.createElement('a');a.download='NEXORA-Photo.png';a.href=document.getElementById('photoCanvas').toDataURL('image/png');a.click();
+}
 
-        <!-- GALLERY -->
-        <section class="page" id="gallery">
-          <div class="page-intro"><span class="eyebrow">VISUAL INSPIRATION</span><h2>Gallery</h2><p>A collection of images to inspire your imagination.</p></div>
-          <div class="gallery-grid">
-            <article class="gallery-item"><img src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=85" alt="Sunrise landscape"><div><span>01 / NATURE</span><h3>Golden Morning</h3><button class="favorite-btn" data-favorite="Golden Morning">♡ Save</button></div></article>
-            <article class="gallery-item"><img src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=900&q=85" alt="Starry sky"><div><span>02 / SPACE</span><h3>Infinite Night</h3><button class="favorite-btn" data-favorite="Infinite Night">♡ Save</button></div></article>
-            <article class="gallery-item"><img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=85" alt="Computer circuit"><div><span>03 / TECH</span><h3>Digital Future</h3><button class="favorite-btn" data-favorite="Digital Future">♡ Save</button></div></article>
-            <article class="gallery-item"><img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=900&q=85" alt="Ocean"><div><span>04 / OCEAN</span><h3>Blue Horizon</h3><button class="favorite-btn" data-favorite="Blue Horizon">♡ Save</button></div></article>
-            <article class="gallery-item"><img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=900&q=85" alt="Mountain"><div><span>05 / TRAVEL</span><h3>Quiet Escape</h3><button class="favorite-btn" data-favorite="Quiet Escape">♡ Save</button></div></article>
-            <article class="gallery-item"><img src="https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=900&q=85" alt="Forest"><div><span>06 / FOREST</span><h3>Into the Green</h3><button class="favorite-btn" data-favorite="Into the Green">♡ Save</button></div></article>
-          </div>
-        </section>
-
-        <!-- TOOLS -->
-        <section class="page" id="tools">
-          <div class="page-intro"><span class="eyebrow">YOUR DIGITAL TOOLBOX</span><h2>Tools</h2><p>Simple utilities that work directly in your browser.</p></div>
-          <div class="tools-grid">
-            <article class="tool-card"><div class="tool-icon">⌁</div><h3>Quick Notes</h3><p>Write something and save it on this device.</p><textarea id="quickNote" placeholder="Write your note here..."></textarea><button class="primary-btn" id="saveNote">Save Note</button><small id="noteStatus"></small></article>
-            <article class="tool-card"><div class="tool-icon">⌗</div><h3>Word Counter</h3><p>Count words and characters instantly.</p><textarea id="wordInput" placeholder="Type or paste your text..."></textarea><div class="counter-results"><span>Words <strong id="wordCount">0</strong></span><span>Characters <strong id="charCount">0</strong></span></div></article>
-            <article class="tool-card"><div class="tool-icon">◷</div><h3>Focus Timer</h3><p>Use a simple 25-minute focus session.</p><div class="timer-display" id="timerDisplay">25:00</div><div class="timer-actions"><button class="primary-btn" id="timerStart">Start</button><button class="secondary-btn" id="timerReset">Reset</button></div></article>
-            <article class="tool-card"><div class="tool-icon">⌘</div><h3>Random Idea</h3><p>Need inspiration? Generate a random idea.</p><div class="idea-display" id="ideaDisplay">Tap the button to get an idea.</div><button class="primary-btn" id="ideaButton">Generate Idea</button></article>
-          </div>
-        </section>
-
-        <!-- PROFILE -->
-        <section class="page" id="profile">
-          <div class="page-intro"><span class="eyebrow">YOUR SPACE</span><h2>My Profile</h2><p>Manage your local demo profile.</p></div>
-          <div class="profile-layout">
-            <div class="panel profile-card"><div class="profile-avatar-large" id="profileAvatar">N</div><h3 id="profileDisplayName">Guest User</h3><p id="profileEmail">Not logged in</p><span class="status-pill" id="profileStatus">Guest mode</span><div class="profile-plan" id="profilePlan">Free Member</div><button class="primary-btn" id="profileLogin">Login / Register</button></div>
-            <div class="panel profile-edit"><div class="panel-heading"><h3>Edit profile</h3></div><form id="profileForm"><label>Display name<input id="editName" maxlength="30" placeholder="Your name"></label><label>Email<input id="editEmail" type="email" placeholder="Your email"></label><label>About you<textarea id="editBio" maxlength="200" placeholder="Write a short introduction..."></textarea></label><button class="primary-btn" type="submit">Save Changes</button></form></div>
-          </div>
-        </section>
-
-        <!-- SUBSCRIPTION -->
-        <section class="page" id="subscription">
-          <div class="page-intro"><span class="eyebrow">MEMBERSHIP</span><h2>Choose your experience</h2><p>This is a visual demo. No payment will be collected.</p></div>
-          <div class="plans-grid">
-            <article class="plan-card"><span class="plan-tag">STARTER</span><h3>Free</h3><div class="plan-price">₹0 <small>/ forever</small></div><p>Explore the essential workspace.</p><ul><li>✓ Dashboard access</li><li>✓ Basic tools</li><li>✓ Theme customization</li><li>✓ Local saved preferences</li></ul><button class="secondary-btn plan-action" data-plan="Free">Current / Select</button></article>
-            <article class="plan-card plan-featured"><span class="popular-tag">DEMO FEATURED</span><span class="plan-tag">ADVANCED</span><h3>Premium</h3><div class="plan-price">₹199 <small>/ month demo</small></div><p>Preview an enhanced experience.</p><ul><li>✓ Everything in Free</li><li>✓ Premium demo badge</li><li>✓ Extra visual themes</li><li>✓ Premium preview tools</li></ul><button class="primary-btn plan-action" data-plan="Premium Demo">Activate Demo</button></article>
-          </div>
-          <p class="disclaimer">Important: Membership selection is stored only in this browser. It is not a real subscription or payment system.</p>
-        </section>
-
-        <!-- THEME STUDIO -->
-        <section class="page" id="customize">
-          <div class="page-intro"><span class="eyebrow">MAKE IT YOURS</span><h2>Theme Studio</h2><p>Choose an accent color and customize your workspace.</p></div>
-          <div class="panel theme-panel"><h3>Choose your theme</h3><div class="theme-options">
-            <button class="theme-choice" data-theme-choice="violet"><span class="theme-dot violet-dot"></span><strong>Cosmic Violet</strong></button>
-            <button class="theme-choice" data-theme-choice="ocean"><span class="theme-dot ocean-dot"></span><strong>Ocean Blue</strong></button>
-            <button class="theme-choice" data-theme-choice="emerald"><span class="theme-dot emerald-dot"></span><strong>Emerald</strong></button>
-            <button class="theme-choice" data-theme-choice="sunset"><span class="theme-dot sunset-dot"></span><strong>Sunset</strong></button>
-            <button class="theme-choice" data-theme-choice="rose"><span class="theme-dot rose-dot"></span><strong>Rose</strong></button>
-          </div><h3>Custom accent color</h3><div class="color-row"><input type="color" id="accentPicker" value="#8b70ff"><span>Choose your own color</span></div><button class="secondary-btn" id="resetTheme">Reset Theme</button></div>
-        </section>
-
-        <!-- FAVORITES -->
-        <section class="page" id="favorites">
-          <div class="page-intro"><span class="eyebrow">YOUR COLLECTION</span><h2>Favorites</h2><p>Your saved gallery items appear here.</p></div>
-          <div class="panel"><div id="favoritesList" class="favorites-list"><p class="empty-state">No favorites saved yet. Visit the Gallery to save something.</p></div></div>
-        </section>
-
-        <!-- NOTIFICATIONS -->
-        <section class="page" id="notifications">
-          <div class="page-intro"><span class="eyebrow">STAY UPDATED</span><h2>Notifications</h2><p>Updates and messages for your workspace.</p></div>
-          <div class="panel"><div class="panel-heading"><h3>Your notifications</h3><button class="text-btn" id="markAllRead">Mark all as read</button></div><div id="notificationList" class="notification-list"></div></div>
-        </section>
-
-        <!-- SETTINGS -->
-        <section class="page" id="settings">
-          <div class="page-intro"><span class="eyebrow">CONTROL CENTER</span><h2>Settings</h2><p>Manage your workspace preferences and demo data.</p></div>
-          <div class="settings-grid">
-            <div class="panel settings-card"><h3>Appearance</h3><label class="setting-row"><span><strong>Compact layout</strong><small>Reduce spacing in the workspace.</small></span><input type="checkbox" id="compactToggle"></label><label class="setting-row"><span><strong>Animations</strong><small>Enable interface transitions.</small></span><input type="checkbox" id="animationToggle" checked></label></div>
-            <div class="panel settings-card"><h3>Account</h3><p>Login is optional. You can use NEXORA as a guest.</p><button class="primary-btn" id="settingsLogin">Login / Register</button><button class="secondary-btn" id="logoutBtn">Log out</button></div>
-            <div class="panel settings-card"><h3>Data management</h3><p>Your demo information is stored in this browser only.</p><button class="secondary-btn" id="downloadData">Export my data</button><button class="danger-btn" id="resetData">Reset local data</button></div>
-          </div>
-          <p class="disclaimer">Do not enter real passwords or sensitive information. This website has no secure server-side authentication.</p>
-        </section>
-
-      </div>
-
-      <footer class="footer"><span>© 2026 NEXORA</span><span>Built for ideas beyond ordinary.</span></footer>
-    </main>
-  </div>
-
-  <!-- LOGIN MODAL -->
-  <div class="modal-backdrop hidden" id="loginModal">
-    <div class="modal">
-      <button class="modal-close" data-close="loginModal">✕</button>
-      <div class="modal-logo">N</div>
-      <span class="eyebrow">WELCOME TO NEXORA</span>
-      <h2 id="authTitle">Welcome back</h2>
-      <p id="authSubtitle">Login to your local demo profile.</p>
-      <div class="auth-tabs"><button class="auth-tab active" data-auth="login">Login</button><button class="auth-tab" data-auth="register">Register</button></div>
-      <form id="authForm">
-        <div id="registerFields" class="hidden"><label>Your name<input id="authName" maxlength="30" placeholder="Enter your name"></label></div>
-        <label>Email<input id="authEmail" type="email" required placeholder="you@example.com"></label>
-        <label>Password<input id="authPassword" type="password" required minlength="4" placeholder="Demo password"></label>
-        <div id="confirmField" class="hidden"><label>Confirm password<input id="authConfirm" type="password" placeholder="Repeat password"></label></div>
-        <button class="primary-btn full-btn" type="submit" id="authSubmit">Login</button>
-      </form>
-      <button class="secondary-btn full-btn guest-btn" id="guestBtn">Continue as Guest</button>
-      <small class="modal-note">Demo only. Never use a real password here.</small>
-    </div>
-  </div>
-
-  <div class="toast-container" id="toastContainer"></div>
-  <script src="script.js"></script>
+async function startRecording(){
+try{
+let stream=await navigator.mediaDevices.getUserMedia({audio:true});
+recordChunks=[];recorder=new MediaRecorder(stream);
+recorder.ondataavailable=e=>{if(e.data.size)recordChunks.push(e.data)};
+recorder.onstop=()=>{
+voiceBlob=new Blob(recordChunks,{type:recorder.mimeType||'audio/webm'});
+if(voiceURL)URL.revokeObjectURL(voiceURL);
+voiceURL=URL.createObjectURL(voiceBlob);
+document.getElementById('voicePlayer').src=voiceURL;
+document.getElementById('voiceTrackLabel').textContent='Recorded voiceover';
+document.getElementById('recordStatus').textContent='Recording saved. Preview or add it to your project.';
+stream.getTracks().forEach(t=>t.stop());
+};
+recorder.start();
+document.getElementById('recordBtn').disabled=true;
+document.getElementById('stopBtn').disabled=false;
+document.getElementById('recordStatus').textContent='Recording...';
+}catch(e){document.getElementById('recordStatus').textContent='Microphone permission denied or unavailable.'}
+}
+function stopRecording(){
+if(recorder&&recorder.state==='recording')recorder.stop();
+document.getElementById('recordBtn').disabled=false;
+document.getElementById('stopBtn').disabled=true;
+}
+function addVoiceToTimeline(){
+if(!voiceBlob){alert('Record your voice first.');return}
+document.getElementById('voiceTrackLabel').textContent='✓ Voice recording added to project';
+alert('Voice recording added to the project timeline.');
+}
+document.getElementById('voicePlayer').addEventListener('play',function(){
+this.volume=Number(document.getElementById('voiceVolume').value)/100;
+this.playbackRate=Number(document.getElementById('voiceSpeed').value)/100;
+});
+</script>
 </body>
 </html>
