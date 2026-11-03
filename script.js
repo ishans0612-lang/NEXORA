@@ -1,782 +1,775 @@
+/* =====================================
+   NEXORA — Main JavaScript
+   Browser-only personal demo
+===================================== */
 
 const $ = id => document.getElementById(id);
 
-const KEY = "nexora_v1";
+const STORAGE_KEY = "nexora_complete_v1";
 
-const defaults = {
+const defaultData = {
   user: null,
-  guest: true,
-  premium: false,
-  plan: "Guest",
-  theme: "dark",
-  accent: "#8b72ff",
-  animations: true,
-  compact: false,
-  images: true,
-  bio: "",
+  plan: "Free",
+  theme: "violet",
+  customAccent: "",
   favorites: [],
   activities: [],
   notifications: [
-    {id:1,title:"Welcome to NEXORA!",message:"Your digital workspace is ready.",read:false},
-    {id:2,title:"Explore your dashboard",message:"Discover all available features.",read:false}
+    { title: "Welcome to NEXORA!", message: "Your personal workspace is ready.", read: false },
+    { title: "Theme Studio is ready", message: "Customize your workspace with different colors.", read: false }
   ],
-  savedThemes: []
+  note: "",
+  compact: false,
+  animations: true
 };
 
-let state;
+let data = loadData();
+let authMode = "login";
+let timerSeconds = 1500;
+let timerInterval = null;
 
-try {
-  state = {...defaults,...JSON.parse(localStorage.getItem(KEY) || "{}")};
-} catch {
-  state = {...defaults};
+function loadData() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return saved ? { ...structuredClone(defaultData), ...saved } : structuredClone(defaultData);
+  } catch {
+    return structuredClone(defaultData);
+  }
 }
 
-let authMode = "login";
-let actionCount = 0;
-
-function save() {
-  localStorage.setItem(KEY,JSON.stringify(state));
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
 function toast(message) {
-  const el = document.createElement("div");
-  el.className = "toast";
-  el.textContent = "✦  " + message;
-  $("toastContainer").appendChild(el);
-  setTimeout(()=>el.remove(),3200);
+  const container = $("toastContainer");
+  const item = document.createElement("div");
+  item.className = "toast";
+  item.textContent = message;
+  container.appendChild(item);
+
+  setTimeout(() => item.remove(), 3000);
 }
 
-function record(message) {
-  state.activities.unshift({
+function addActivity(message) {
+  data.activities.unshift({
     message,
-    time:new Date().toLocaleString()
+    time: new Date().toLocaleString()
   });
-  state.activities = state.activities.slice(0,50);
-  actionCount++;
-  save();
+
+  data.activities = data.activities.slice(0, 15);
+  saveData();
   renderActivity();
   updateDashboard();
 }
 
-function addNotification(title,message) {
-  state.notifications.unshift({
-    id:Date.now(),
-    title,
-    message,
-    read:false
+/* =====================================
+   NAVIGATION
+===================================== */
+
+const pageTitles = {
+  dashboard: "Dashboard",
+  explore: "Explore",
+  gallery: "Gallery",
+  tools: "Tools",
+  profile: "My Profile",
+  subscription: "Membership",
+  customize: "Theme Studio",
+  favorites: "Favorites",
+  notifications: "Notifications",
+  settings: "Settings"
+};
+
+function showPage(pageId) {
+  const page = $(pageId);
+
+  if (!page) return;
+
+  document.querySelectorAll(".page").forEach(p => {
+    p.classList.remove("active");
   });
-  save();
-  renderNotifications();
-}
 
-function navigate(page) {
-  const target = $(page);
-  if(!target) return;
+  page.classList.add("active");
 
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  target.classList.add("active");
-
-  document.querySelectorAll("[data-page]").forEach(b=>{
-    b.classList.toggle("active",b.dataset.page===page);
+  document.querySelectorAll(".nav-item").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.page === pageId
+    );
   });
 
-  $("pageName").textContent =
-    page.charAt(0).toUpperCase()+page.slice(1);
+  $("pageName").textContent = pageTitles[pageId] || "Workspace";
+  $("topTitle").textContent = pageTitles[pageId] || "Workspace";
 
   $("sidebar").classList.remove("open");
   $("sidebarOverlay").classList.remove("show");
 
-  window.scrollTo({top:0,behavior:"smooth"});
+  if (pageId === "favorites") renderFavorites();
+  if (pageId === "notifications") renderNotifications();
+  if (pageId === "profile") renderProfile();
 
-  if(page==="profile") renderProfile();
-  if(page==="favorites") renderFavorites();
-  if(page==="tools") renderPremium();
-  if(page==="subscription") updateSubscription();
-  if(page==="customize") renderSavedThemes();
+  if (pageId !== "dashboard") {
+    addActivity("Opened " + pageTitles[pageId]);
+  }
 
-  record("Opened "+page);
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-document.addEventListener("click",e=>{
-  const nav = e.target.closest("[data-page]");
-  if(nav){
-    navigate(nav.dataset.page);
+document.addEventListener("click", event => {
+  const pageButton = event.target.closest("[data-page]");
+
+  if (pageButton) {
+    showPage(pageButton.dataset.page);
   }
 });
 
-// SIDEBAR
-
-$("menuToggle").addEventListener("click",()=>{
+$("menuToggle").addEventListener("click", () => {
   $("sidebar").classList.add("open");
   $("sidebarOverlay").classList.add("show");
 });
 
-$("closeSidebar").addEventListener("click",closeSidebar);
-$("sidebarOverlay").addEventListener("click",closeSidebar);
+$("closeSidebar").addEventListener("click", closeSidebar);
+$("sidebarOverlay").addEventListener("click", closeSidebar);
 
-function closeSidebar(){
+function closeSidebar() {
   $("sidebar").classList.remove("open");
   $("sidebarOverlay").classList.remove("show");
 }
 
-// DASHBOARD
+/* =====================================
+   DASHBOARD
+===================================== */
 
-function updateDashboard(){
-  const name = state.user?.name || "Explorer";
-  const plan = state.premium ? state.plan : state.user ? "Free" : "Guest";
+function updateDashboard() {
+  const name = data.user?.name || "Explorer";
+  const initial = name.charAt(0).toUpperCase() || "N";
 
-  $("welcomeName").textContent = name.split(" ")[0];
-  $("miniName").textContent = state.user?.name || "Guest User";
-  $("miniPlan").textContent = state.premium ? plan+" Member" : plan+" Account";
+  $("welcomeName").textContent = name;
+  $("miniName").textContent = data.user?.name || "Guest User";
+  $("miniPlan").textContent = data.plan === "Free"
+    ? "Free Member"
+    : "Premium Demo";
 
-  $("miniAvatar").textContent = name.charAt(0).toUpperCase();
-  $("topAvatar").textContent = name.charAt(0).toUpperCase();
+  $("miniAvatar").textContent = initial;
+  $("topAvatar").textContent = initial;
+  $("profileAvatar").textContent = initial;
 
-  $("statPlan").textContent = state.premium ? plan : state.user ? "Free" : "Guest";
-  $("statFeatures").textContent = state.premium ? "12" : "8";
-  $("statSaved").textContent = state.favorites.length;
-  $("statActivity").textContent = state.activities.length;
+  $("statPlan").textContent = data.plan === "Free" ? "Free" : "Premium";
+  $("statFeatures").textContent = "10";
+  $("statSaved").textContent = data.favorites.length;
+  $("statActivity").textContent = data.activities.length;
 
-  $("todayDate").textContent =
-    new Date().toLocaleDateString("en-IN",{
-      weekday:"short",day:"numeric",month:"short",year:"numeric"
-    });
+  const unread = data.notifications.filter(n => !n.read).length;
+  $("navNotificationCount").textContent = unread;
+  $("navNotificationCount").style.display = unread ? "inline-block" : "none";
 
-  $("accountBtn").textContent =
-    state.user ? "My Account" : "Login / Sign up";
-
-  $("navNotificationCount").textContent =
-    state.notifications.filter(n=>!n.read).length;
-
-  $("navNotificationCount").style.display =
-    state.notifications.some(n=>!n.read) ? "inline" : "none";
+  $("todayDate").textContent = new Date().toLocaleDateString(
+    undefined,
+    { weekday: "short", day: "numeric", month: "short", year: "numeric" }
+  );
 }
 
-// AUTHENTICATION - LOCAL DEMO
+function renderActivity() {
+  const list = $("activityList");
 
-function openLogin(mode="login"){
-  setAuthMode(mode);
-  $("loginModal").classList.add("show");
+  if (!data.activities.length) {
+    list.innerHTML = '<p class="empty-state">Your activity will appear here.</p>';
+    return;
+  }
+
+  list.innerHTML = "";
+
+  data.activities.slice(0, 5).forEach(activity => {
+    const row = document.createElement("div");
+    row.className = "activity-item";
+
+    const dot = document.createElement("span");
+    dot.className = "activity-dot";
+
+    const content = document.createElement("div");
+    const strong = document.createElement("strong");
+    const small = document.createElement("small");
+
+    strong.textContent = activity.message;
+    small.textContent = activity.time;
+
+    content.append(strong, small);
+    row.append(dot, content);
+    list.appendChild(row);
+  });
 }
 
-function closeModal(id){
-  $(id).classList.remove("show");
-}
+/* =====================================
+   THEME STUDIO
+===================================== */
 
-document.querySelectorAll("[data-close]").forEach(btn=>{
-  btn.addEventListener("click",()=>closeModal(btn.dataset.close));
-});
+function applyTheme() {
+  document.body.dataset.theme = data.theme;
 
-$("accountBtn").addEventListener("click",()=>{
-  if(state.user) navigate("profile");
-  else openLogin();
-});
+  if (data.customAccent) {
+    document.documentElement.style.setProperty(
+      "--accent",
+      data.customAccent
+    );
 
-$("profileLogin").addEventListener("click",()=>openLogin());
-$("settingsLogin").addEventListener("click",()=>openLogin());
+    const hex = data.customAccent.replace("#", "");
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
 
-document.querySelectorAll("[data-auth]").forEach(btn=>{
-  btn.addEventListener("click",()=>setAuthMode(btn.dataset.auth));
-});
+    document.documentElement.style.setProperty(
+      "--accent-rgb",
+      `${r},${g},${b}`
+    );
+  } else {
+    document.documentElement.style.removeProperty("--accent");
+    document.documentElement.style.removeProperty("--accent-rgb");
+  }
 
-function setAuthMode(mode){
-  authMode=mode;
-
-  document.querySelectorAll(".auth-tab").forEach(btn=>{
-    btn.classList.toggle("active",btn.dataset.auth===mode);
+  document.querySelectorAll("[data-theme-choice]").forEach(button => {
+    button.classList.toggle(
+      "selected",
+      button.dataset.themeChoice === data.theme
+    );
   });
 
-  $("registerFields").classList.toggle("hidden",mode!=="register");
-  $("confirmField").classList.toggle("hidden",mode!=="register");
-
-  $("authTitle").textContent =
-    mode==="register" ? "Create your account." : "Welcome back.";
-
-  $("authSubtitle").textContent =
-    mode==="register" ? "Create a local demo profile." : "Sign in to your local demo account.";
-
-  $("authSubmit").textContent =
-    mode==="register" ? "Create Account" : "Login";
+  $("accentPicker").value = data.customAccent || getThemeColor(data.theme);
 }
 
-$("togglePassword").addEventListener("click",()=>{
-  const input=$("authPassword");
-  input.type=input.type==="password"?"text":"password";
-  $("togglePassword").textContent=input.type==="password"?"Show":"Hide";
+function getThemeColor(theme) {
+  const colors = {
+    violet: "#8b70ff",
+    ocean: "#35a9ff",
+    emerald: "#25c997",
+    sunset: "#ff945c",
+    rose: "#f06baf"
+  };
+
+  return colors[theme] || colors.violet;
+}
+
+document.querySelectorAll("[data-theme-choice]").forEach(button => {
+  button.addEventListener("click", () => {
+    data.theme = button.dataset.themeChoice;
+    data.customAccent = "";
+    saveData();
+    applyTheme();
+    toast("Theme changed successfully!");
+    addActivity("Changed workspace theme");
+  });
 });
 
-$("authForm").addEventListener("submit",e=>{
-  e.preventDefault();
+$("accentPicker").addEventListener("input", event => {
+  data.customAccent = event.target.value;
+  saveData();
+  applyTheme();
+});
 
-  const email=$("authEmail").value.trim().toLowerCase();
-  const password=$("authPassword").value;
+$("resetTheme").addEventListener("click", () => {
+  data.theme = "violet";
+  data.customAccent = "";
+  saveData();
+  applyTheme();
+  toast("Theme reset!");
+});
 
-  if(!email || !password) return toast("Fill in all required fields.");
+/* =====================================
+   LOGIN AND REGISTER
+===================================== */
 
-  let accounts=[];
+function openLogin() {
+  $("loginModal").classList.remove("hidden");
+  setAuthMode("login");
+}
 
-  try {
-    accounts=JSON.parse(localStorage.getItem("nexora_accounts")||"[]");
-  } catch {}
+function closeLogin() {
+  $("loginModal").classList.add("hidden");
+}
 
-  if(authMode==="register"){
-    const name=$("authName").value.trim();
-    const confirm=$("authConfirm").value;
+function setAuthMode(mode) {
+  authMode = mode;
 
-    if(!name) return toast("Enter your name.");
-    if(password.length<6) return toast("Use at least 6 characters.");
-    if(password!==confirm) return toast("Passwords do not match.");
-    if(accounts.some(a=>a.email===email)) return toast("Account already exists.");
+  document.querySelectorAll(".auth-tab").forEach(tab => {
+    tab.classList.toggle("active", tab.dataset.auth === mode);
+  });
 
-    accounts.push({name,email,password});
-    localStorage.setItem("nexora_accounts",JSON.stringify(accounts));
+  const registering = mode === "register";
 
-    state.user={name,email};
-    state.guest=false;
-    state.premium=false;
-    state.plan="Free";
+  $("registerFields").classList.toggle("hidden", !registering);
+  $("confirmField").classList.toggle("hidden", !registering);
 
-    toast("Demo account created!");
-  } else {
-    const account=accounts.find(a=>a.email===email && a.password===password);
+  $("authTitle").textContent = registering ? "Create account" : "Welcome back";
+  $("authSubtitle").textContent = registering
+    ? "Create a local demo profile."
+    : "Login to your local demo profile.";
 
-    if(!account) return toast("Incorrect demo login details.");
+  $("authSubmit").textContent = registering ? "Create Demo Account" : "Login";
+}
 
-    state.user={name:account.name,email:account.email};
-    state.guest=false;
-    state.premium=false;
-    state.plan="Free";
+document.querySelectorAll("[data-auth]").forEach(tab => {
+  tab.addEventListener("click", () => {
+    setAuthMode(tab.dataset.auth);
+  });
+});
 
-    toast("Welcome back!");
+document.querySelectorAll("[data-close]").forEach(button => {
+  button.addEventListener("click", () => {
+    const target = $(button.dataset.close);
+    if (target) target.classList.add("hidden");
+  });
+});
+
+$("accountBtn").addEventListener("click", openLogin);
+$("profileLogin").addEventListener("click", openLogin);
+$("settingsLogin").addEventListener("click", openLogin);
+
+$("topAvatar").addEventListener("click", () => {
+  showPage("profile");
+});
+
+$("authForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const email = $("authEmail").value.trim();
+  const password = $("authPassword").value;
+
+  if (!email || !password) {
+    toast("Please fill in the required fields.");
+    return;
   }
 
-  save();
-  closeModal("loginModal");
-  updateDashboard();
-  renderProfile();
-  record("Account "+(authMode==="register"?"registered":"logged in"));
-  addNotification("Account updated","Your local demo session is active.");
-  $("authForm").reset();
-});
+  if (authMode === "register") {
+    const name = $("authName").value.trim();
+    const confirm = $("authConfirm").value;
 
-// GUEST MODE
-
-function continueGuest(){
-  state.user=null;
-  state.guest=true;
-  state.premium=false;
-  state.plan="Guest";
-  save();
-  closeModal("loginModal");
-  updateDashboard();
-  toast("Continuing as Guest!");
-  record("Continued as Guest");
-}
-
-$("guestBtn").addEventListener("click",continueGuest);
-$("modalGuest").addEventListener("click",continueGuest);
-
-// LOGOUT
-
-function logout(){
-  if(!confirm("Do you want to end this local demo session?")) return;
-
-  state.user=null;
-  state.guest=true;
-  state.premium=false;
-  state.plan="Guest";
-
-  save();
-  updateDashboard();
-  renderProfile();
-  toast("You are now browsing as Guest.");
-  record("Logged out");
-}
-
-$("logoutBtn").addEventListener("click",logout);
-
-// PROFILE
-
-function renderProfile(){
-  const name=state.user?.name||"Guest User";
-  $("profileAvatar").textContent=name.charAt(0).toUpperCase();
-  $("profileDisplayName").textContent=name;
-  $("profileEmail").textContent=state.user?.email||"Guest Mode";
-  $("profilePlan").textContent=state.premium?state.plan.toUpperCase():state.user?"FREE":"GUEST";
-  $("profileStatus").textContent=state.user?"Demo account active":"Browsing as Guest";
-
-  $("editName").value=state.user?.name||"";
-  $("editEmail").value=state.user?.email||"";
-  $("editBio").value=state.bio||"";
-}
-
-$("profileForm").addEventListener("submit",e=>{
-  e.preventDefault();
-
-  const name=$("editName").value.trim();
-  const email=$("editEmail").value.trim();
-
-  if(!name) return toast("Name cannot be empty.");
-
-  if(state.user){
-    state.user.name=name;
-    state.user.email=email;
-  } else {
-    state.guest=true;
-  }
-
-  state.bio=$("editBio").value;
-  save();
-  renderProfile();
-  updateDashboard();
-  toast("Profile saved!");
-  record("Updated profile");
-});
-
-// SUBSCRIPTION DEMO
-
-function unlockPremium(plan="Pro",source="Demo upgrade"){
-  state.premium=true;
-  state.plan=plan;
-
-  save();
-  updateDashboard();
-  updateSubscription();
-  renderPremium();
-
-  toast(plan+" demo access unlocked!");
-  addNotification("Premium unlocked","Your "+plan+" demo access is active.");
-  record(source);
-}
-
-document.querySelectorAll(".plan-action").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    const plan=btn.dataset.plan;
-
-    if(plan==="Free"){
-      state.premium=false;
-      state.plan="Free";
-      save();
-      updateDashboard();
-      updateSubscription();
-      toast("Free demo plan selected.");
-      record("Selected Free plan");
+    if (!name) {
+      toast("Please enter your name.");
       return;
     }
 
-    if(confirm("Activate the "+plan+" demo plan? No payment will be processed.")){
-      unlockPremium(plan,"Activated "+plan+" demo plan");
+    if (password.length < 4) {
+      toast("Demo password must have at least 4 characters.");
+      return;
     }
-  });
-});
 
-$("cheatForm").addEventListener("submit",e=>{
-  e.preventDefault();
+    if (password !== confirm) {
+      toast("Passwords do not match.");
+      return;
+    }
 
-  const code=$("cheatInput").value.trim();
-
-  if(code==="0987654321"){
-    unlockPremium("Ultimate","Cheat code used");
-    $("cheatMessage").textContent="✓ Demo premium access unlocked!";
-    $("cheatMessage").style.color="var(--green)";
-    $("cheatInput").value="";
-  }else{
-    $("cheatMessage").textContent="✕ Incorrect code. Please try again.";
-    $("cheatMessage").style.color="var(--danger)";
-    toast("Invalid cheat code!");
+    data.user = { name, email };
+  } else {
+    data.user = {
+      name: email.split("@")[0],
+      email
+    };
   }
+
+  saveData();
+  closeLogin();
+  updateDashboard();
+  renderProfile();
+  toast("Demo profile activated!");
+  addActivity("Logged in to local demo profile");
+  $("authForm").reset();
 });
 
-function updateSubscription(){
-  document.querySelectorAll(".plan-action").forEach(btn=>{
-    btn.textContent =
-      state.premium && state.plan===btn.dataset.plan
-      ? "✓ Active Demo Plan"
-      : btn.dataset.plan==="Free" && !state.premium
-      ? "Current / Select Free"
-      : "Try Demo Upgrade";
-  });
+$("guestBtn").addEventListener("click", () => {
+  data.user = null;
+  saveData();
+  closeLogin();
+  updateDashboard();
+  renderProfile();
+  toast("Continuing as Guest.");
+});
 
-  $("cheatMessage").textContent=state.premium
-    ? "✓ "+state.plan+" demo access is active."
-    : "Demo access code is required to unlock premium features.";
+/* =====================================
+   PROFILE
+===================================== */
+
+function renderProfile() {
+  const user = data.user;
+
+  $("profileDisplayName").textContent = user?.name || "Guest User";
+  $("profileEmail").textContent = user?.email || "Not logged in";
+  $("profileStatus").textContent = user ? "Demo account" : "Guest mode";
+  $("profilePlan").textContent = data.plan === "Free" ? "Free Member" : "Premium Demo";
+
+  $("editName").value = user?.name || "";
+  $("editEmail").value = user?.email || "";
 }
 
-function renderPremium(){
-  $("premiumLock").classList.toggle("hidden",state.premium);
-  $("premiumToolsGrid").classList.toggle("hidden",!state.premium);
-  document.querySelectorAll("[data-premium]").forEach(card=>{
-    card.classList.toggle("locked",!state.premium);
-    const label=card.querySelector("small");
-    if(label) label.textContent=state.premium?"UNLOCKED":"PRO 🔒";
-  });
-}
+$("profileForm").addEventListener("submit", event => {
+  event.preventDefault();
 
-// FAVORITES
+  const name = $("editName").value.trim();
+  const email = $("editEmail").value.trim();
 
-function renderFavorites(){
-  const container=$("favoritesList");
-  container.innerHTML="";
-
-  if(!state.favorites.length){
-    container.innerHTML='<p class="empty-state">Nothing saved yet. Open the gallery and tap ♡.</p>';
+  if (!name) {
+    toast("Please enter a display name.");
     return;
   }
 
-  state.favorites.forEach(item=>{
-    const row=document.createElement("div");
-    row.className="favorite-entry";
-
-    const name=document.createElement("b");
-    name.textContent="♡ "+item;
-
-    const remove=document.createElement("button");
-    remove.textContent="Remove";
-    remove.addEventListener("click",()=>toggleFavorite(item));
-
-    row.append(name,remove);
-    container.appendChild(row);
-  });
-}
-
-function toggleFavorite(name){
-  if(state.favorites.includes(name)){
-    state.favorites=state.favorites.filter(x=>x!==name);
-    toast("Removed from favorites.");
-  }else{
-    state.favorites.push(name);
-    toast("Added to favorites!");
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    toast("Please enter a valid email.");
+    return;
   }
 
-  save();
-  renderFavorites();
+  data.user = {
+    name,
+    email
+  };
+
+  saveData();
+  renderProfile();
   updateDashboard();
-}
-
-document.querySelectorAll("[data-fav]").forEach(btn=>{
-  const name=btn.dataset.fav;
-
-  btn.addEventListener("click",()=>{
-    toggleFavorite(name);
-    btn.classList.toggle("saved",state.favorites.includes(name));
-    btn.textContent=state.favorites.includes(name)?"♥":"♡";
-  });
-
-  if(state.favorites.includes(name)){
-    btn.classList.add("saved");
-    btn.textContent="♥";
-  }
+  toast("Profile updated!");
+  addActivity("Updated profile");
 });
 
-// NOTIFICATIONS
+/* =====================================
+   MEMBERSHIP DEMO
+===================================== */
 
-function renderNotifications(){
-  const container=$("notificationList");
-  container.innerHTML="";
+document.querySelectorAll(".plan-action").forEach(button => {
+  button.addEventListener("click", () => {
+    const selectedPlan = button.dataset.plan;
 
-  if(!state.notifications.length){
-    container.innerHTML='<p class="empty-state">No notifications.</p>';
+    if (selectedPlan === "Free") {
+      data.plan = "Free";
+    } else {
+      data.plan = "Premium Demo";
+    }
+
+    saveData();
+    updateDashboard();
+    renderProfile();
+
+    toast(data.plan + " activated in demo mode.");
+    addActivity("Selected " + data.plan + " plan");
+  });
+});
+
+/* =====================================
+   FAVORITES
+===================================== */
+
+function renderFavorites() {
+  const container = $("favoritesList");
+  container.innerHTML = "";
+
+  if (!data.favorites.length) {
+    container.innerHTML = '<p class="empty-state">No favorites saved yet. Visit the Gallery to save something.</p>';
+    return;
   }
 
-  state.notifications.forEach(n=>{
-    const row=document.createElement("div");
-    row.className="notification-entry"+(n.read?"":" unread");
+  data.favorites.forEach(name => {
+    const row = document.createElement("div");
+    row.className = "favorite-row";
 
-    const content=document.createElement("div");
-    const title=document.createElement("b");
-    const message=document.createElement("p");
+    const title = document.createElement("strong");
+    title.textContent = "♡  " + name;
 
-    title.textContent=n.title;
-    message.textContent=n.message;
-    message.style.marginTop="5px";
-
-    content.append(title,message);
-
-    const read=document.createElement("button");
-    read.textContent=n.read?"Read":"Mark read";
-    read.addEventListener("click",()=>{
-      n.read=true;
-      save();
-      renderNotifications();
+    const remove = document.createElement("button");
+    remove.textContent = "Remove";
+    remove.addEventListener("click", () => {
+      data.favorites = data.favorites.filter(item => item !== name);
+      saveData();
+      renderFavorites();
       updateDashboard();
+      updateFavoriteButtons();
+      toast("Removed from favorites.");
     });
 
-    row.append(content,read);
+    row.append(title, remove);
     container.appendChild(row);
   });
-
-  updateDashboard();
 }
 
-$("notificationBtn").addEventListener("click",()=>{
-  navigate("notifications");
+function updateFavoriteButtons() {
+  document.querySelectorAll("[data-favorite]").forEach(button => {
+    const saved = data.favorites.includes(button.dataset.favorite);
+    button.textContent = saved ? "♥ Saved" : "♡ Save";
+  });
+}
+
+document.querySelectorAll("[data-favorite]").forEach(button => {
+  button.addEventListener("click", () => {
+    const name = button.dataset.favorite;
+
+    if (data.favorites.includes(name)) {
+      data.favorites = data.favorites.filter(item => item !== name);
+      toast("Removed from favorites.");
+    } else {
+      data.favorites.push(name);
+      toast("Added to favorites!");
+    }
+
+    saveData();
+    updateFavoriteButtons();
+    updateDashboard();
+    renderFavorites();
+  });
 });
 
-$("markAllRead").addEventListener("click",()=>{
-  state.notifications.forEach(n=>n.read=true);
-  save();
+/* =====================================
+   EXPLORE SEARCH
+===================================== */
+
+$("exploreSearch").addEventListener("input", event => {
+  const query = event.target.value.toLowerCase().trim();
+  let visible = 0;
+
+  document.querySelectorAll(".explore-card").forEach(card => {
+    const searchText = (
+      card.dataset.search + " " + card.textContent
+    ).toLowerCase();
+
+    const matches = searchText.includes(query);
+
+    card.style.display = matches ? "" : "none";
+
+    if (matches) visible++;
+  });
+
+  $("noSearchResults").classList.toggle("hidden", visible !== 0);
+});
+
+/* =====================================
+   QUICK NOTES
+===================================== */
+
+$("quickNote").value = data.note || "";
+
+$("saveNote").addEventListener("click", () => {
+  data.note = $("quickNote").value;
+  saveData();
+
+  $("noteStatus").textContent = "Saved on this device!";
+  toast("Note saved successfully.");
+  addActivity("Saved a quick note");
+});
+
+/* =====================================
+   WORD COUNTER
+===================================== */
+
+$("wordInput").addEventListener("input", event => {
+  const text = event.target.value;
+  const words = text.trim()
+    ? text.trim().split(/\s+/).length
+    : 0;
+
+  $("wordCount").textContent = words;
+  $("charCount").textContent = text.length;
+});
+
+/* =====================================
+   FOCUS TIMER
+===================================== */
+
+function updateTimerDisplay() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+
+  $("timerDisplay").textContent =
+    String(minutes).padStart(2, "0") + ":" +
+    String(seconds).padStart(2, "0");
+}
+
+$("timerStart").addEventListener("click", () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    $("timerStart").textContent = "Resume";
+    return;
+  }
+
+  if (timerSeconds <= 0) timerSeconds = 1500;
+
+  $("timerStart").textContent = "Pause";
+
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimerDisplay();
+
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      $("timerStart").textContent = "Start";
+      toast("Focus session completed!");
+    }
+  }, 1000);
+});
+
+$("timerReset").addEventListener("click", () => {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerSeconds = 1500;
+  $("timerStart").textContent = "Start";
+  updateTimerDisplay();
+});
+
+/* =====================================
+   RANDOM IDEA GENERATOR
+===================================== */
+
+const ideas = [
+  "Create a personal portfolio website.",
+  "Design a futuristic dashboard.",
+  "Learn one new JavaScript concept today.",
+  "Build a simple browser-based game.",
+  "Create a digital photo gallery.",
+  "Design a unique mobile app interface.",
+  "Make a website with five different themes.",
+  "Build a useful daily productivity tool.",
+  "Create a collection of your favorite images.",
+  "Learn how CSS animations work."
+];
+
+$("ideaButton").addEventListener("click", () => {
+  const randomIdea = ideas[Math.floor(Math.random() * ideas.length)];
+  $("ideaDisplay").textContent = randomIdea;
+});
+
+/* =====================================
+   NOTIFICATIONS
+===================================== */
+
+function renderNotifications() {
+  const container = $("notificationList");
+  container.innerHTML = "";
+
+  if (!data.notifications.length) {
+    container.innerHTML = '<p class="empty-state">No notifications available.</p>';
+    return;
+  }
+
+  data.notifications.forEach(notification => {
+    const item = document.createElement("article");
+    item.className = "notification-item" + (notification.read ? " read" : "");
+
+    const title = document.createElement("strong");
+    title.textContent = notification.title;
+
+    const message = document.createElement("p");
+    message.textContent = notification.message;
+
+    const status = document.createElement("small");
+    status.textContent = notification.read ? "Read" : "Unread";
+
+    item.append(title, message, status);
+    container.appendChild(item);
+  });
+}
+
+$("markAllRead").addEventListener("click", () => {
+  data.notifications.forEach(item => {
+    item.read = true;
+  });
+
+  saveData();
   renderNotifications();
+  updateDashboard();
   toast("All notifications marked as read.");
 });
 
-$("clearNotifications").addEventListener("click",()=>{
-  state.notifications=[];
-  save();
-  renderNotifications();
-  toast("Notifications cleared.");
+$("notificationBtn").addEventListener("click", () => {
+  showPage("notifications");
 });
 
-// ACTIVITY
+/* =====================================
+   SETTINGS
+===================================== */
 
-function renderActivity(){
-  const container=$("activityList");
-  container.innerHTML="";
+$("compactToggle").checked = data.compact;
+$("animationToggle").checked = data.animations;
 
-  if(!state.activities.length){
-    container.innerHTML='<p class="empty-state">No activity yet. Start exploring!</p>';
-    return;
-  }
-
-  state.activities.forEach(a=>{
-    const row=document.createElement("div");
-    row.className="activity-entry";
-
-    const message=document.createElement("span");
-    message.textContent="✦ "+a.message;
-
-    const time=document.createElement("small");
-    time.textContent=a.time;
-
-    row.append(message,time);
-    container.appendChild(row);
-  });
+function applySettings() {
+  document.body.classList.toggle("compact", data.compact);
+  document.body.classList.toggle("no-animations", !data.animations);
 }
 
-$("clearActivity").addEventListener("click",()=>{
-  state.activities=[];
-  save();
-  renderActivity();
+$("compactToggle").addEventListener("change", event => {
+  data.compact = event.target.checked;
+  saveData();
+  applySettings();
+  toast("Layout preference updated.");
+});
+
+$("animationToggle").addEventListener("change", event => {
+  data.animations = event.target.checked;
+  saveData();
+  applySettings();
+  toast("Animation preference updated.");
+});
+
+$("logoutBtn").addEventListener("click", () => {
+  data.user = null;
+  data.plan = "Free";
+  saveData();
   updateDashboard();
-  toast("Activity history cleared.");
+  renderProfile();
+  toast("Logged out. You are now a guest.");
+  addActivity("Logged out");
 });
 
-// SEARCH
+/* =====================================
+   EXPORT DATA
+===================================== */
 
-$("exploreSearch").addEventListener("input",e=>{
-  const query=e.target.value.toLowerCase();
-
-  document.querySelectorAll(".explore-card").forEach(card=>{
-    card.style.display=card.textContent.toLowerCase().includes(query)?"":"none";
-  });
-});
-
-// THEMES
-
-function applyTheme(){
-  document.body.dataset.theme=state.theme||"dark";
-  document.documentElement.style.setProperty("--accent",state.accent||"#8b72ff");
-
-  $("accentPicker").value=state.accent||"#8b72ff";
-  $("animationToggle").checked=state.animations!==false;
-  $("compactToggle").checked=!!state.compact;
-  $("imagesToggle").checked=state.images!==false;
-
-  document.body.classList.toggle("no-animations",state.animations===false);
-  document.body.classList.toggle("compact",!!state.compact);
-  document.body.classList.toggle("no-images",state.images===false);
-
-  document.querySelectorAll("[data-theme]").forEach(btn=>{
-    btn.style.outline=btn.dataset.theme===state.theme?"2px solid var(--accent)":"none";
-  });
-}
-
-document.querySelectorAll(".theme-choice").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    state.theme=btn.dataset.theme;
-    save();
-    applyTheme();
-    toast("Theme changed to "+btn.textContent.trim());
-    record("Changed theme");
-  });
-});
-
-$("accentPicker").addEventListener("input",e=>{
-  state.accent=e.target.value;
-  save();
-  applyTheme();
-});
-
-$("animationToggle").addEventListener("change",e=>{
-  state.animations=e.target.checked;
-  save();
-  applyTheme();
-});
-
-$("compactToggle").addEventListener("change",e=>{
-  state.compact=e.target.checked;
-  save();
-  applyTheme();
-});
-
-$("imagesToggle").addEventListener("change",e=>{
-  state.images=e.target.checked;
-  save();
-  applyTheme();
-});
-
-$("quickTheme").addEventListener("click",()=>{
-  state.theme=state.theme==="light"?"dark":"light";
-  save();
-  applyTheme();
-  toast("Appearance updated.");
-});
-
-// SAVED THEMES
-
-function renderSavedThemes(){
-  const container=$("savedThemes");
-  container.innerHTML="";
-
-  state.savedThemes.forEach((theme,index)=>{
-    const btn=document.createElement("button");
-    btn.className="saved-theme";
-    btn.textContent=theme.name+" ↗";
-
-    btn.addEventListener("click",()=>{
-      state.theme=theme.theme;
-      state.accent=theme.accent;
-      save();
-      applyTheme();
-      toast("Theme loaded!");
-    });
-
-    container.appendChild(btn);
-  });
-}
-
-$("saveTheme").addEventListener("click",()=>{
-  const name=$("themeName").value.trim();
-
-  if(!name) return toast("Enter a theme name.");
-
-  state.savedThemes.push({
-    name,
-    theme:state.theme,
-    accent:state.accent
-  });
-
-  save();
-  renderSavedThemes();
-  toast("Your theme has been saved.");
-  $("themeName").value="";
-});
-
-// THEME EXPORT / IMPORT
-
-$("exportTheme").addEventListener("click",()=>{
-  const data={
-    theme:state.theme,
-    accent:state.accent,
-    animations:state.animations,
-    compact:state.compact,
-    images:state.images,
-    savedThemes:state.savedThemes
+$("downloadData").addEventListener("click", () => {
+  const exportData = {
+    ...data,
+    exportedAt: new Date().toISOString()
   };
 
-  downloadJSON(data,"nexora-theme.json");
-});
+  const blob = new Blob(
+    [JSON.stringify(exportData, null, 2)],
+    { type: "application/json" }
+  );
 
-$("importTheme").addEventListener("change",async e=>{
-  const file=e.target.files[0];
-  if(!file) return;
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
 
-  try{
-    const data=JSON.parse(await file.text());
+  link.href = url;
+  link.download = "nexora-data.json";
+  link.click();
 
-    if(!["dark","light","amoled","ocean","forest","sunset","rose","galaxy"].includes(data.theme)){
-      throw new Error("Invalid theme");
-    }
-
-    if(!/^#[0-9a-f]{6}$/i.test(data.accent)){
-      throw new Error("Invalid colour");
-    }
-
-    state.theme=data.theme;
-    state.accent=data.accent;
-    state.animations=data.animations!==false;
-    state.compact=!!data.compact;
-    state.images=data.images!==false;
-    state.savedThemes=Array.isArray(data.savedThemes)?data.savedThemes:[];
-
-    save();
-    applyTheme();
-    renderSavedThemes();
-    toast("Theme imported!");
-  }catch{
-    toast("Invalid theme file.");
-  }
-
-  e.target.value="";
-});
-
-$("resetTheme").addEventListener("click",()=>{
-  if(!confirm("Reset appearance to defaults?")) return;
-
-  state.theme="dark";
-  state.accent="#8b72ff";
-  state.animations=true;
-  state.compact=false;
-  state.images=true;
-
-  save();
-  applyTheme();
-  toast("Theme reset.");
-});
-
-// DATA EXPORT
-
-function downloadJSON(data,filename){
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;
-  a.download=filename;
-  a.click();
   URL.revokeObjectURL(url);
-}
-
-$("downloadData").addEventListener("click",()=>{
-  downloadJSON(state,"nexora-my-data.json");
-  toast("Data export prepared.");
+  toast("Your data export is ready.");
 });
 
-// RESET
+/* =====================================
+   RESET DATA
+===================================== */
 
-$("resetData").addEventListener("click",()=>{
-  if(!confirm("This will remove your local Nexora data. Continue?")) return;
+$("resetData").addEventListener("click", () => {
+  const confirmed = confirm(
+    "Are you sure? This will delete your saved NEXORA data from this browser."
+  );
 
-  localStorage.removeItem(KEY);
-  localStorage.removeItem("nexora_accounts");
+  if (!confirmed) return;
+
+  localStorage.removeItem(STORAGE_KEY);
   location.reload();
 });
 
-// INITIALIZE
+/* =====================================
+   INITIALIZATION
+===================================== */
 
-applyTheme();
-updateDashboard();
-renderProfile();
-renderNotifications();
-renderActivity();
-renderFavorites();
-renderSavedThemes();
-renderPremium();
-updateSubscription();
+function initialize() {
+  applyTheme();
+  applySettings();
+  updateDashboard();
+  renderActivity();
+  renderProfile();
+  updateFavoriteButtons();
+  updateTimerDisplay();
 
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-$("dashboard").classList.add("active");
+  // Start on dashboard
+  showPage("dashboard");
+}
 
-document.querySelectorAll(".nav-item").forEach(b=>{
-  b.classList.toggle("active",b.dataset.page==="dashboard");
-});
-
-console.log("NEXORA initialized successfully.");
+initialize();
